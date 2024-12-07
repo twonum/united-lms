@@ -1,8 +1,6 @@
 /* eslint-disable react/prop-types */
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import {
-  Select,
   SelectContent,
   SelectGroup,
   SelectItem,
@@ -12,50 +10,41 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 // eslint-disable-next-line no-unused-vars
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { filterCategories } from "@/data/categories"; // Import filterCategories from categories.js
 
-const categories = [
-  { id: "nextjs", label: "Next JS" },
-  { id: "data science", label: "Data Science" },
-  { id: "frontend development", label: "Frontend Development" },
-  { id: "fullstack development", label: "Fullstack Development" },
-  { id: "mern stack development", label: "MERN Stack Development" },
-  { id: "backend development", label: "Backend Development" },
-  { id: "javascript", label: "Javascript" },
-  { id: "python", label: "Python" },
-  { id: "docker", label: "Docker" },
-  { id: "mongodb", label: "MongoDB" },
-  { id: "html", label: "HTML" },
-];
-
-const Filter = ({ handleFilterChange }) => {
-  const [selectedCategories, setSelectedCategories] = useState([]);
+const Filter = ({ handleFilterChange, selectedCategories }) => {
+  const [localSelectedCategories, setLocalSelectedCategories] =
+    useState(selectedCategories);
   const [sortByPrice, setSortByPrice] = useState("");
 
-  const handleCategoryChange = (categoryId) => {
-    setSelectedCategories((prevCategories) => {
-      const newCategories = prevCategories.includes(categoryId)
-        ? prevCategories.filter((id) => id !== categoryId)
-        : [...prevCategories, categoryId];
+  // Sync local state with parent component's selectedCategories state
+  useEffect(() => {
+    setLocalSelectedCategories(selectedCategories);
+  }, [selectedCategories]);
 
-        handleFilterChange(newCategories, sortByPrice);
-        return newCategories;
-    });
+  // Handle the category change when selecting from dropdown
+  const handleCategoryChange = (newCategories) => {
+    setLocalSelectedCategories(newCategories);
+    handleFilterChange(newCategories, sortByPrice); // Pass updated categories to parent
   };
 
   const selectByPriceHandler = (selectedValue) => {
     setSortByPrice(selectedValue);
-    handleFilterChange(selectedCategories, selectedValue);
-  }
+    handleFilterChange(localSelectedCategories, selectedValue); // Pass sort option with selected categories
+  };
+
   return (
-    <div className="w-full md:w-[20%]">
+    <div className="relative w-full md:w-[25%] bg-transparent p-6 rounded-lg shadow-lg backdrop-blur-md">
       <div className="flex items-center justify-between">
-        <h1 className="font-semibold text-lg md:text-xl">Filter Options</h1>
+        <h1 className="font-semibold text-lg md:text-xl text-white">
+          Filter Options
+        </h1>
         <Select onValueChange={selectByPriceHandler}>
-          <SelectTrigger>
+          <SelectTrigger className="text-white border border-gray-300 hover:border-blue-600 focus:ring focus:ring-blue-600 rounded-md">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white text-black border border-gray-300 shadow-lg rounded-md">
             <SelectGroup>
               <SelectLabel>Sort by price</SelectLabel>
               <SelectItem value="low">Low to High</SelectItem>
@@ -64,21 +53,28 @@ const Filter = ({ handleFilterChange }) => {
           </SelectContent>
         </Select>
       </div>
-      <Separator className="my-4" />
+      <Separator className="my-4 border-gray-300" />
       <div>
-        <h1 className="font-semibold mb-2">CATEGORY</h1>
-        {categories.map((category) => (
-          // eslint-disable-next-line react/jsx-key
-          <div className="flex items-center space-x-2 my-2">
-            <Checkbox
-              id={category.id}
-              onCheckedChange={() => handleCategoryChange(category.id)}
-            />
-            <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              {category.label}
-            </Label>
-          </div>
-        ))}
+        <h1 className="font-semibold mb-2 text-white">CATEGORY</h1>
+        <Select
+          multiple
+          value={localSelectedCategories} // Ensure this is an array of selected category ids
+          onValueChange={handleCategoryChange} // Update the categories on selection change
+          className="bg-white text-black border border-gray-300 rounded-md p-2 shadow-lg"
+        >
+          <SelectTrigger className="text-black border border-gray-300 hover:border-blue-600 focus:ring focus:ring-blue-600 rounded-md">
+            <SelectValue placeholder="Select Categories" />
+          </SelectTrigger>
+          <SelectContent className="bg-white text-black border border-gray-300 shadow-lg rounded-md">
+            <SelectGroup>
+              {filterCategories.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

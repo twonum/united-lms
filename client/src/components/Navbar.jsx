@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
 import { Menu, School } from "lucide-react";
 import { useEffect } from "react";
 import {
@@ -26,6 +26,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useLogoutUserMutation } from "@/features/api/authApi";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
+import MobileNavbar from "./MobileNavbar";
 
 const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
@@ -44,20 +45,21 @@ const Navbar = () => {
   }, [isSuccess, data, navigate]);
 
   return (
-    <div className="h-16 fixed top-0 left-0 right-0 dark:bg-[#1C1C20] bg-[#0c1815] z-10">
-      {/* Desktop */}
-      <div className="max-w-7xl mx-auto hidden md:flex justify-between items-center gap-10 h-full px-4">
-        <div className="flex items-center gap-2">
+    <div className="h-16 fixed top-0 left-0 right-0 bg-transparent z-10 shadow-2xl transition-all duration-300 ease-in-out">
+      <div className="max-w-7xl mx-auto hidden md:flex justify-between items-center gap-12 h-full px-6 backdrop-blur-md bg-opacity-60">
+        <div className="flex items-center gap-3">
           <School size={30} color="white" />
           <Link to="/">
-            <h1 className="font-extrabold text-2xl text-white">United LMS</h1>
+            <h1 className="font-extrabold text-3xl text-white hover:text-gray-400 transition-colors duration-300 ease-in-out">
+              United LMS
+            </h1>
           </Link>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-8">
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Avatar>
+                <Avatar className="cursor-pointer hover:scale-105 transition-transform duration-300 ease-in-out">
                   <AvatarImage
                     src={user?.photoUrl || "https://github.com/shadcn.png"}
                     alt="User Avatar"
@@ -65,17 +67,40 @@ const Navbar = () => {
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuContent className="w-64 bg-transparent border border-gray-700 shadow-xl rounded-lg transition-all duration-300">
+                <DropdownMenuLabel className="font-semibold text-white text-lg">
+                  My Account
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
-                    <Link to="/my-learning">My Learning</Link>
+                    <Link
+                      to="/"
+                      className="text-white hover:text-gray-300 py-2 px-4 rounded-md transition-all duration-300"
+                    >
+                      Home
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Link to="/profile">Edit Profile</Link>
+                    <Link
+                      to="/my-learning"
+                      className="text-white hover:text-gray-300 py-2 px-4 rounded-md transition-all duration-300"
+                    >
+                      My Learning
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={logoutHandler}>
+                  <DropdownMenuItem>
+                    <Link
+                      to="/profile"
+                      className="text-white hover:text-gray-300 py-2 px-4 rounded-md transition-all duration-300"
+                    >
+                      Edit Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={logoutHandler}
+                    className="text-red-500 hover:text-red-400 py-2 px-4 rounded-md transition-all duration-300"
+                  >
                     Log out
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -83,27 +108,43 @@ const Navbar = () => {
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
-                      <Link to="/admin/dashboard">Dashboard</Link>
+                      <Link
+                        to="/admin/dashboard"
+                        className="text-white hover:text-gray-300 py-2 px-4 rounded-md transition-all duration-300"
+                      >
+                        Dashboard
+                      </Link>
                     </DropdownMenuItem>
                   </>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={() => navigate("/login")}>
+            <div className="flex items-center gap-6">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/login")}
+                className="text-white border-2 border-white bg-[#212121] hover:bg-black hover:text-white hover:ring-4 hover:ring-white hover:ring-opacity-50 transition-all duration-300 ease-in-out px-5 py-2 rounded-lg"
+              >
                 Login
               </Button>
-              <Button onClick={() => navigate("/signup")}>Signup</Button>
+              <Button
+                onClick={() => navigate("/signup")}
+                className="text-white border-2 border-white bg-transparent hover:bg-emerald-900 hover:text-white hover:ring-4 hover:ring-white hover:ring-opacity-50 transition-all duration-300 ease-in-out px-5 py-2 rounded-lg"
+              >
+                Signup
+              </Button>
             </div>
           )}
           <DarkMode />
         </div>
       </div>
 
-      {/* Mobile */}
-      <div className="flex md:hidden items-center justify-between px-4 h-full">
-        <h1 className="font-extrabold text-xl text-white">United LMS</h1>
+      {/* Mobile Navbar */}
+      <div className="flex md:hidden items-center justify-between px-6 h-full">
+        <h1 className="font-extrabold text-2xl text-white hover:text-gray-400 transition-colors duration-300 ease-in-out">
+          United LMS
+        </h1>
         <MobileNavbar user={user} />
       </div>
     </div>
@@ -111,76 +152,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-const MobileNavbar = ({ user }) => {
-  const navigate = useNavigate();
-  const [logoutUser, { data, isSuccess }] = useLogoutUserMutation();
-
-  const logoutHandler = async () => {
-    await logoutUser();
-  };
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success(data?.message || "User logged out.");
-      navigate("/login");
-    }
-  }, [isSuccess, data, navigate]);
-
-  return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button
-          size="icon"
-          className="rounded-full hover:bg-gray-300 dark:hover:bg-gray-700"
-          variant="outline"
-        >
-          <Menu />
-        </Button>
-      </SheetTrigger>
-      <SheetContent className="flex flex-col dark:bg-[#1C1C20] bg-white">
-        <SheetHeader className="flex items-center justify-between mt-2 px-4">
-          <SheetTitle className="font-bold text-xl">
-            <Link to="/" className="text-white dark:text-gray-200">
-              United LMS
-            </Link>
-          </SheetTitle>
-          <DarkMode />
-        </SheetHeader>
-        <nav className="flex flex-col px-4 space-y-4 mt-4">
-          <Link to="/my-learning" className="text-white dark:text-gray-300">
-            My Learning
-          </Link>
-          <Link to="/profile" className="text-white dark:text-gray-300">
-            Edit Profile
-          </Link>
-          {user ? (
-            <button
-              className="text-red-500 dark:text-red-400"
-              onClick={logoutHandler}
-            >
-              Log out
-            </button>
-          ) : (
-            <Link to="/login" className="text-blue-500">
-              Login
-            </Link>
-          )}
-        </nav>
-        {user?.role === "instructor" && (
-          <SheetFooter className="mt-auto px-4">
-            <SheetClose asChild>
-              <Button
-                type="button"
-                className="w-full"
-                onClick={() => navigate("/admin/dashboard")}
-              >
-                Dashboard
-              </Button>
-            </SheetClose>
-          </SheetFooter>
-        )}
-      </SheetContent>
-    </Sheet>
-  );
-};

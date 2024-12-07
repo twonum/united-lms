@@ -68,7 +68,6 @@ export const createCheckoutSession = async (req, res) => {
     console.log(error);
   }
 };
-
 export const stripeWebhook = async (req, res) => {
   let event;
 
@@ -89,23 +88,30 @@ export const stripeWebhook = async (req, res) => {
 
   // Handle the checkout session completed event
   if (event.type === "checkout.session.completed") {
-    console.log("check session complete is called");
+    console.log("Checkout session completed event received");
 
     try {
       const session = event.data.object;
+
+      // Log session details
+      console.log("Session details:", session);
 
       const purchase = await CoursePurchase.findOne({
         paymentId: session.id,
       }).populate({ path: "courseId" });
 
       if (!purchase) {
+        console.log("Purchase not found!");
         return res.status(404).json({ message: "Purchase not found" });
       }
 
+      // Update the purchase status and amount
       if (session.amount_total) {
         purchase.amount = session.amount_total / 100; // PKR conversion
       }
-      purchase.status = "completed";
+
+      purchase.status = "completed"; // Set status to completed
+      console.log("Updated purchase status to completed");
 
       // Make all lectures visible by setting `isPreviewFree` to true
       if (purchase.courseId && purchase.courseId.lectures.length > 0) {
@@ -113,9 +119,11 @@ export const stripeWebhook = async (req, res) => {
           { _id: { $in: purchase.courseId.lectures } },
           { $set: { isPreviewFree: true } }
         );
+        console.log("Lectures updated to be free previews");
       }
 
       await purchase.save();
+      console.log("Purchase status saved to database");
 
       // Update user's enrolledCourses
       await User.findByIdAndUpdate(
@@ -123,6 +131,7 @@ export const stripeWebhook = async (req, res) => {
         { $addToSet: { enrolledCourses: purchase.courseId._id } }, // Add course ID to enrolledCourses
         { new: true }
       );
+      console.log("User enrolled in course");
 
       // Update course to add user ID to enrolledStudents
       await Course.findByIdAndUpdate(
@@ -130,11 +139,13 @@ export const stripeWebhook = async (req, res) => {
         { $addToSet: { enrolledStudents: purchase.userId } }, // Add user ID to enrolledStudents
         { new: true }
       );
+      console.log("Course updated with enrolled student");
     } catch (error) {
       console.error("Error handling event:", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
   res.status(200).send();
 };
 

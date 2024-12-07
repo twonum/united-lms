@@ -23,6 +23,7 @@ import {
 } from "./components/ProtectedRoutes";
 import PurchaseCourseProtectedRoute from "./components/PurchaseCourseProtectedRoute";
 import { ThemeProvider } from "./components/ThemeProvider";
+import Dynamic3DHeading from "./components/ui/Dynamic3DHeading";
 
 const appRouter = createBrowserRouter([
   {
@@ -42,6 +43,7 @@ const appRouter = createBrowserRouter([
         path: "login",
         element: (
           <AuthenticatedUser>
+            <Dynamic3DHeading />
             <Login />
           </AuthenticatedUser>
         ),
@@ -83,7 +85,7 @@ const appRouter = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <PurchaseCourseProtectedRoute>
-            <CourseProgress />
+              <CourseProgress />
             </PurchaseCourseProtectedRoute>
           </ProtectedRoute>
         ),
@@ -132,7 +134,7 @@ function App() {
   return (
     <main>
       <ThemeProvider>
-      <RouterProvider router={appRouter} />
+        <RouterProvider router={appRouter} />
       </ThemeProvider>
     </main>
   );

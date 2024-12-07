@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import RichTextEditor from "@/components/RichTextEditor";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +30,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 const CourseTab = () => {
-  
   const [input, setInput] = useState({
     courseTitle: "",
     subTitle: "",
@@ -42,15 +42,17 @@ const CourseTab = () => {
 
   const params = useParams();
   const courseId = params.courseId;
-  const { data: courseByIdData, isLoading: courseByIdLoading , refetch} =
-    useGetCourseByIdQuery(courseId);
+  const {
+    data: courseByIdData,
+    isLoading: courseByIdLoading,
+    refetch,
+  } = useGetCourseByIdQuery(courseId);
 
-    // eslint-disable-next-line no-empty-pattern
-    const [publishCourse, {}] = usePublishCourseMutation();
- 
+  const [publishCourse] = usePublishCourseMutation();
+
   useEffect(() => {
-    if (courseByIdData?.course) { 
-        const course = courseByIdData?.course;
+    if (courseByIdData?.course) {
+      const course = courseByIdData?.course;
       setInput({
         courseTitle: course.courseTitle,
         subTitle: course.subTitle,
@@ -80,7 +82,7 @@ const CourseTab = () => {
   const selectCourseLevel = (value) => {
     setInput({ ...input, courseLevel: value });
   };
-  // get file
+
   const selectThumbnail = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -107,167 +109,164 @@ const CourseTab = () => {
 
   const publishStatusHandler = async (action) => {
     try {
-      const response = await publishCourse({courseId, query:action});
-      if(response.data){
+      const response = await publishCourse({ courseId, query: action });
+      if (response.data) {
         refetch();
         toast.success(response.data.message);
       }
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast.error("Failed to publish or unpublish course");
     }
-  }
+  };
 
   useEffect(() => {
     if (isSuccess) {
-      toast.success(data.message || "Course update.");
+      toast.success(data.message || "Course updated.");
     }
     if (error) {
       toast.error(error.data.message || "Failed to update course");
     }
   }, [isSuccess, error]);
 
-  if(courseByIdLoading) return <h1>Loading...</h1>
- 
+  if (courseByIdLoading) return <h1>Loading...</h1>;
   return (
-    <Card>
-      <CardHeader className="flex flex-row justify-between">
+    <Card className="p-4 md:p-6 bg-transparent shadow-lg border border-white/10 backdrop-blur-sm">
+      <CardHeader className="flex flex-col md:flex-row md:justify-between text-white">
         <div>
-          <CardTitle>Basic Course Information</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg md:text-xl text-shadow-md">
+            Basic Course Information
+          </CardTitle>
+          <CardDescription className="text-sm md:text-base text-opacity-75">
             Make changes to your courses here. Click save when you&apos;re done.
           </CardDescription>
         </div>
-        <div className="space-x-2">
-          <Button disabled={courseByIdData?.course.lectures.length === 0} variant="outline" onClick={()=> publishStatusHandler(courseByIdData?.course.isPublished ? "false" : "true")}>
-            {courseByIdData?.course.isPublished ? "Unpublished" : "Publish"}
+        <div className="mt-4 space-x-2 flex flex-wrap md:mt-0">
+          <Button
+            disabled={courseByIdData?.course.lectures.length === 0}
+            variant="outline"
+            onClick={() =>
+              publishStatusHandler(
+                courseByIdData?.course.isPublished ? "false" : "true"
+              )
+            }
+            className="hover:bg-white/20 transition-all"
+          >
+            {courseByIdData?.course.isPublished ? "Unpublish" : "Publish"}
           </Button>
-          <Button>Remove Course</Button>
+          <Button className="hover:bg-white/20 transition-all">
+            Remove Course
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4 mt-5">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mt-5">
           <div>
-            <Label>Title</Label>
+            <Label className="text-white">Title</Label>
             <Input
               type="text"
               name="courseTitle"
               value={input.courseTitle}
               onChange={changeEventHandler}
-              placeholder="Ex. Fullstack developer"
+              placeholder="Ex. Fullstack Developer"
+              className="text-white bg-transparent border-white/20 focus:ring-2 focus:ring-pink-500"
             />
           </div>
           <div>
-            <Label>Subtitle</Label>
+            <Label className="text-white">Subtitle</Label>
             <Input
               type="text"
               name="subTitle"
               value={input.subTitle}
               onChange={changeEventHandler}
-              placeholder="Ex. Become a Fullstack developer from zero to hero in 2 months"
+              placeholder="Ex. Become a Fullstack Developer"
+              className="text-white bg-transparent border-white/20 focus:ring-2 focus:ring-pink-500"
             />
           </div>
-          <div>
-            <Label>Description</Label>
+          <div className="col-span-1 md:col-span-2 lg:col-span-3">
+            <Label className="text-white">Description</Label>
             <RichTextEditor input={input} setInput={setInput} />
           </div>
-          <div className="flex items-center gap-5">
-            <div>
-              <Label>Category</Label>
-              <Select
-                defaultValue={input.category}
-                onValueChange={selectCategory}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Category</SelectLabel>
-                    <SelectItem value="Next JS">Next JS</SelectItem>
-                    <SelectItem value="Data Science">Data Science</SelectItem>
-                    <SelectItem value="Frontend Development">
-                      Frontend Development
-                    </SelectItem>
-                    <SelectItem value="Fullstack Development">
-                      Fullstack Development
-                    </SelectItem>
-                    <SelectItem value="MERN Stack Development">
-                      MERN Stack Development
-                    </SelectItem>
-                    <SelectItem value="Javascript">Javascript</SelectItem>
-                    <SelectItem value="Python">Python</SelectItem>
-                    <SelectItem value="Docker">Docker</SelectItem>
-                    <SelectItem value="MongoDB">MongoDB</SelectItem>
-                    <SelectItem value="HTML">HTML</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Course Level</Label>
-              <Select
-                defaultValue={input.courseLevel}
-                onValueChange={selectCourseLevel}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select a course level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Course Level</SelectLabel>
-                    <SelectItem value="Beginner">Beginner</SelectItem>
-                    <SelectItem value="Medium">Medium</SelectItem>
-                    <SelectItem value="Advance">Advance</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Price in (INR)</Label>
-              <Input
-                type="number"
-                name="coursePrice"
-                value={input.coursePrice}
-                onChange={changeEventHandler}
-                placeholder="199"
-                className="w-fit"
-              />
-            </div>
+          <div>
+            <Label className="text-white">Category</Label>
+            <Select
+              defaultValue={input.category}
+              onValueChange={selectCategory}
+              className="text-white bg-transparent border-white/20"
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Category</SelectLabel>
+                  <SelectItem value="Next JS">Next JS</SelectItem>
+                  <SelectItem value="Data Science">Data Science</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
           <div>
-            <Label>Course Thumbnail</Label>
+            <Label className="text-white">Course Level</Label>
+            <Select
+              defaultValue={input.courseLevel}
+              onValueChange={selectCourseLevel}
+              className="text-white bg-transparent border-white/20"
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a level" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Level</SelectLabel>
+                  <SelectItem value="Beginner">Beginner</SelectItem>
+                  <SelectItem value="Medium">Medium</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-white">Price (INR)</Label>
+            <Input
+              type="number"
+              name="coursePrice"
+              value={input.coursePrice}
+              onChange={changeEventHandler}
+              placeholder="199"
+              className="text-white bg-transparent border-white/20 focus:ring-2 focus:ring-pink-500"
+            />
+          </div>
+          <div className="col-span-1 md:col-span-2 lg:col-span-3">
+            <Label className="text-white">Course Thumbnail</Label>
             <Input
               type="file"
               onChange={selectThumbnail}
               accept="image/*"
-              className="w-fit"
+              className="bg-transparent border-white/20"
             />
             {previewThumbnail && (
               <img
                 src={previewThumbnail}
-                className="e-64 my-2"
+                className="mt-4 w-full max-w-md object-cover rounded-md border-2 border-white/30"
                 alt="Course Thumbnail"
               />
             )}
           </div>
-          <div>
-            <Button onClick={() => navigate("/admin/course")} variant="outline">
-              Cancel
-            </Button>
-            <Button disabled={isLoading} onClick={updateCourseHandler}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Please wait
-                </>
-              ) : (
-                "Save"
-              )}
-            </Button>
-          </div>
         </div>
       </CardContent>
+      <div className="flex justify-end gap-4 p-4">
+        <Button
+          disabled={isLoading}
+          onClick={updateCourseHandler}
+          className="hover:bg-pink-600 text-white bg-black disabled:bg-blue-700"
+        >
+          {isLoading ? (
+            <Loader2 className="animate-spin mr-2 h-4 w-4" />
+          ) : (
+            "Save Changes"
+          )}
+        </Button>
+      </div>
     </Card>
   );
 };

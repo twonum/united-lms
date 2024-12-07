@@ -5,21 +5,29 @@ const isAuthenticated = async (req, res, next) => {
     const token = req.cookies.token;
     if (!token) {
       return res.status(401).json({
-        message: "User not authenticated",
+        message: "User not authenticated. Token is missing.",
         success: false,
       });
     }
-    const decode = await jwt.verify(token, process.env.SECRET_KEY);
-    if (!decode) {
+
+    // Verify the token with proper error handling
+    try {
+      const decode = jwt.verify(token, process.env.SECRET_KEY);
+      req.id = decode.userId; // Attach userId to the request object
+      next();
+    } catch (err) {
       return res.status(401).json({
-        message: "Invalid token",
+        message: "Invalid or expired token.",
         success: false,
       });
     }
-    req.id = decode.userId;
-    next();
   } catch (error) {
-    console.log(error);
+    console.error("Authentication Error:", error);
+    return res.status(500).json({
+      message: "Internal Server Error during authentication.",
+      success: false,
+    });
   }
 };
+
 export default isAuthenticated;

@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,54 +43,59 @@ const CreateLecture = () => {
     }
   }, [isSuccess, error]);
 
-  console.log(lectureData);
-
   return (
-    <div className="flex-1 mx-10">
-      <div className="mb-4">
-        <h1 className="font-bold text-xl">
-          Let's add lectures, add some basic details for your new lecture
+    <div className="flex-1 mx-10 bg-transparent text-white p-6 rounded-lg shadow-lg backdrop-blur-md">
+      <div className="mb-6">
+        <h1 className="font-bold text-2xl sm:text-3xl md:text-4xl text-shadow-md">
+          Let&apos;s add lectures! Add basic details for your new lecture.
         </h1>
-        <p className="text-sm">
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Possimus,
-          laborum!
+        <p className="text-sm md:text-base text-opacity-75">
+          Add your lectures and organize your course effectively. Keep it
+          concise and clear.
         </p>
       </div>
-      <div className="space-y-4">
-        <div>
-          <Label>Title</Label>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label className="text-lg text-white">Lecture Title</Label>
           <Input
             type="text"
             value={lectureTitle}
             onChange={(e) => setLectureTitle(e.target.value)}
-            placeholder="Your Title Name"
+            placeholder="Enter lecture title"
+            className="text-white bg-transparent border-white/20 focus:ring-2 focus:ring-[#00F798] placeholder:text-white/60"
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4 justify-between">
           <Button
             variant="outline"
             onClick={() => navigate(`/admin/course/${courseId}`)}
+            className="text-white border-white/30 hover:border-white/50 transition-all rounded-lg"
           >
-            Back to course
+            Back to Course
           </Button>
-          <Button disabled={isLoading} onClick={createLectureHandler}>
+          <Button
+            disabled={isLoading}
+            onClick={createLectureHandler}
+            className="bg-[#142a22] text-white hover:bg-[#1f664b] disabled:bg-gray-600 rounded-lg transition-all"
+          >
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
+                Creating...
               </>
             ) : (
-              "Create lecture"
+              "Create Lecture"
             )}
           </Button>
         </div>
-        <div className="mt-10">
+
+        <div className="mt-10 space-y-4">
           {lectureLoading ? (
             <p>Loading lectures...</p>
           ) : lectureError ? (
-            <p>Failed to load lectures.</p>
+            <p className="text-red-400">Failed to load lectures.</p>
           ) : lectureData.lectures.length === 0 ? (
-            <p>No lectures availabe</p>
+            <p className="text-yellow-400">No lectures available.</p>
           ) : (
             lectureData.lectures.map((lecture, index) => (
               <Lecture
