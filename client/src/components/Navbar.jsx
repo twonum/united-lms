@@ -129,7 +129,7 @@ const Navbar = () => {
                 Login
               </Button>
               <Button
-                onClick={() => navigate("/signup")}
+                onClick={() => navigate("/login")}
                 className="text-white border-2 border-white bg-transparent hover:bg-emerald-900 hover:text-white hover:ring-4 hover:ring-white hover:ring-opacity-50 transition-all duration-300 ease-in-out px-5 py-2 rounded-lg"
               >
                 Signup
