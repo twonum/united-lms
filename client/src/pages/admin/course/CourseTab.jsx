@@ -40,8 +40,11 @@ const CourseTab = () => {
     courseThumbnail: "",
   });
 
+  const [previewThumbnail, setPreviewThumbnail] = useState("");
   const params = useParams();
   const courseId = params.courseId;
+  const navigate = useNavigate();
+
   const {
     data: courseByIdData,
     isLoading: courseByIdLoading,
@@ -49,87 +52,94 @@ const CourseTab = () => {
   } = useGetCourseByIdQuery(courseId);
 
   const [publishCourse] = usePublishCourseMutation();
+  const [editCourse, { isLoading, isSuccess, error }] = useEditCourseMutation();
 
   useEffect(() => {
     if (courseByIdData?.course) {
-      const course = courseByIdData?.course;
+      const {
+        courseTitle,
+        subTitle,
+        description,
+        category,
+        courseLevel,
+        coursePrice,
+      } = courseByIdData.course;
       setInput({
-        courseTitle: course.courseTitle,
-        subTitle: course.subTitle,
-        description: course.description,
-        category: course.category,
-        courseLevel: course.courseLevel,
-        coursePrice: course.coursePrice,
+        courseTitle,
+        subTitle,
+        description,
+        category,
+        courseLevel,
+        coursePrice,
         courseThumbnail: "",
       });
     }
   }, [courseByIdData]);
 
-  const [previewThumbnail, setPreviewThumbnail] = useState("");
-  const navigate = useNavigate();
-
-  const [editCourse, { data, isLoading, isSuccess, error }] =
-    useEditCourseMutation();
-
-  const changeEventHandler = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setInput({ ...input, [name]: value });
+    setInput((prev) => ({ ...prev, [name]: value }));
   };
 
-  const selectCategory = (value) => {
-    setInput({ ...input, category: value });
-  };
-  const selectCourseLevel = (value) => {
-    setInput({ ...input, courseLevel: value });
+  const handleSelectChange = (field, value) => {
+    setInput((prev) => ({ ...prev, [field]: value }));
   };
 
-  const selectThumbnail = (e) => {
+  const handleThumbnailChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setInput({ ...input, courseThumbnail: file });
+      setInput((prev) => ({ ...prev, courseThumbnail: file }));
       const fileReader = new FileReader();
       fileReader.onloadend = () => setPreviewThumbnail(fileReader.result);
       fileReader.readAsDataURL(file);
     }
   };
 
-  const updateCourseHandler = async () => {
-    const formData = new FormData();
-    formData.append("courseTitle", input.courseTitle);
-    formData.append("subTitle", input.subTitle);
-    formData.append("description", input.description);
-    formData.append("category", input.category);
-    formData.append("courseLevel", input.courseLevel);
-    formData.append("coursePrice", input.coursePrice);
-    formData.append("courseThumbnail", input.courseThumbnail);
+  const handleUpdateCourse = async () => {
+    if (
+      !input.courseTitle ||
+      !input.subTitle ||
+      !input.description ||
+      !input.category ||
+      !input.courseLevel ||
+      !input.coursePrice
+    ) {
+      return toast.error("All fields are required!");
+    }
 
-    await editCourse({ formData, courseId });
-    window.location.reload();
+    const formData = new FormData();
+    Object.keys(input).forEach((key) => {
+      formData.append(key, input[key]);
+    });
+
+    try {
+      await editCourse({ formData, courseId });
+      toast.success("Course updated successfully.");
+      refetch();
+    } catch (err) {
+      toast.error("Failed to update course.");
+    }
   };
 
-  const publishStatusHandler = async (action) => {
+  const handlePublishStatus = async (action) => {
     try {
       const response = await publishCourse({ courseId, query: action });
-      if (response.data) {
+      if (response?.data) {
         refetch();
         toast.success(response.data.message);
       }
-      // eslint-disable-next-line no-unused-vars
-    } catch (error) {
-      toast.error("Failed to publish or unpublish course");
+    } catch {
+      toast.error("Failed to publish or unpublish course.");
     }
   };
 
   useEffect(() => {
-    if (isSuccess) {
-      toast.success(data.message || "Course updated.");
-    }
-    if (error) {
-      toast.error(error.data.message || "Failed to update course");
-    }
+    if (isSuccess) toast.success("Course updated successfully.");
+    if (error) toast.error("Failed to update course.");
   }, [isSuccess, error]);
 
   if (courseByIdLoading) return <h1>Loading...</h1>;
+
   return (
     <Card className="p-4 md:p-6 bg-transparent shadow-lg border border-white/10 backdrop-blur-sm">
       <CardHeader className="flex flex-col md:flex-row md:justify-between text-white">
@@ -146,7 +156,7 @@ const CourseTab = () => {
             disabled={courseByIdData?.course.lectures.length === 0}
             variant="outline"
             onClick={() =>
-              publishStatusHandler(
+              handlePublishStatus(
                 courseByIdData?.course.isPublished ? "false" : "true"
               )
             }
@@ -167,7 +177,7 @@ const CourseTab = () => {
               type="text"
               name="courseTitle"
               value={input.courseTitle}
-              onChange={changeEventHandler}
+              onChange={handleInputChange}
               placeholder="Ex. Fullstack Developer"
               className="text-white bg-transparent border-white/20 focus:ring-2 focus:ring-pink-500"
             />
@@ -178,7 +188,7 @@ const CourseTab = () => {
               type="text"
               name="subTitle"
               value={input.subTitle}
-              onChange={changeEventHandler}
+              onChange={handleInputChange}
               placeholder="Ex. Become a Fullstack Developer"
               className="text-white bg-transparent border-white/20 focus:ring-2 focus:ring-pink-500"
             />
@@ -191,7 +201,7 @@ const CourseTab = () => {
             <Label className="text-white">Category</Label>
             <Select
               defaultValue={input.category}
-              onValueChange={selectCategory}
+              onValueChange={(value) => handleSelectChange("category", value)}
               className="text-white bg-transparent border-white/20"
             >
               <SelectTrigger className="w-full">
@@ -202,6 +212,20 @@ const CourseTab = () => {
                   <SelectLabel>Category</SelectLabel>
                   <SelectItem value="Next JS">Next JS</SelectItem>
                   <SelectItem value="Data Science">Data Science</SelectItem>
+                  <SelectItem value="Frontend Development">
+                    Frontend Development
+                  </SelectItem>
+                  <SelectItem value="Fullstack Development">
+                    Fullstack Development
+                  </SelectItem>
+                  <SelectItem value="MERN Stack Development">
+                    MERN Stack Development
+                  </SelectItem>
+                  <SelectItem value="Javascript">Javascript</SelectItem>
+                  <SelectItem value="Python">Python</SelectItem>
+                  <SelectItem value="Docker">Docker</SelectItem>
+                  <SelectItem value="MongoDB">MongoDB</SelectItem>
+                  <SelectItem value="HTML">HTML</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -210,7 +234,9 @@ const CourseTab = () => {
             <Label className="text-white">Course Level</Label>
             <Select
               defaultValue={input.courseLevel}
-              onValueChange={selectCourseLevel}
+              onValueChange={(value) =>
+                handleSelectChange("courseLevel", value)
+              }
               className="text-white bg-transparent border-white/20"
             >
               <SelectTrigger className="w-full">
@@ -218,21 +244,22 @@ const CourseTab = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Level</SelectLabel>
+                  <SelectLabel>Course Level</SelectLabel>
                   <SelectItem value="Beginner">Beginner</SelectItem>
                   <SelectItem value="Medium">Medium</SelectItem>
+                  <SelectItem value="Advance">Advance</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
           <div>
-            <Label className="text-white">Price (INR)</Label>
+            <Label className="text-white">Price (PKR)</Label>
             <Input
               type="number"
               name="coursePrice"
               value={input.coursePrice}
-              onChange={changeEventHandler}
-              placeholder="199"
+              onChange={handleInputChange}
+              placeholder="Ex. 5000"
               className="text-white bg-transparent border-white/20 focus:ring-2 focus:ring-pink-500"
             />
           </div>
@@ -240,7 +267,7 @@ const CourseTab = () => {
             <Label className="text-white">Course Thumbnail</Label>
             <Input
               type="file"
-              onChange={selectThumbnail}
+              onChange={handleThumbnailChange}
               accept="image/*"
               className="bg-transparent border-white/20"
             />
@@ -257,7 +284,7 @@ const CourseTab = () => {
       <div className="flex justify-end gap-4 p-4">
         <Button
           disabled={isLoading}
-          onClick={updateCourseHandler}
+          onClick={handleUpdateCourse}
           className="hover:bg-pink-600 text-white bg-black disabled:bg-blue-700"
         >
           {isLoading ? (
