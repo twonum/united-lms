@@ -1,21 +1,6 @@
+/* eslint-disable no-unused-vars */
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./App.css";
-import Login from "./pages/Login";
-import HeroSection from "./pages/student/HeroSection";
-import MainLayout from "./layout/MainLayout";
-import Courses from "./pages/student/Courses";
-import MyLearning from "./pages/student/MyLearning";
-import Profile from "./pages/student/Profile";
-import Sidebar from "./pages/admin/Sidebar";
-import Dashboard from "./pages/admin/Dashboard";
-import CourseTable from "./pages/admin/course/CourseTable";
-import AddCourse from "./pages/admin/course/AddCourse";
-import EditCourse from "./pages/admin/course/EditCourse";
-import CreateLecture from "./pages/admin/lecture/CreateLecture";
-import EditLecture from "./pages/admin/lecture/EditLecture";
-import CourseDetail from "./pages/student/CourseDetail";
-import CourseProgress from "./pages/student/CourseProgress";
-import SearchPage from "./pages/student/SearchPage";
 import {
   AdminRoute,
   AuthenticatedUser,
@@ -24,6 +9,30 @@ import {
 import PurchaseCourseProtectedRoute from "./components/PurchaseCourseProtectedRoute";
 import { ThemeProvider } from "./components/ThemeProvider";
 import Dynamic3DHeading from "./components/ui/Dynamic3DHeading";
+import MainLayout from "./layout/MainLayout";
+import Login from "./pages/Login";
+import Dashboard from "./pages/admin/Dashboard";
+import Sidebar from "./pages/admin/Sidebar";
+import AddCourse from "./pages/admin/course/AddCourse";
+import CourseTable from "./pages/admin/course/CourseTable";
+import EditCourse from "./pages/admin/course/EditCourse";
+import CreateLecture from "./pages/admin/lecture/CreateLecture";
+import EditLecture from "./pages/admin/lecture/EditLecture";
+import CourseDetail from "./pages/student/CourseDetail";
+import CourseProgress from "./pages/student/CourseProgress";
+import Courses from "./pages/student/Courses";
+import HeroSection from "./pages/student/HeroSection";
+import MyLearning from "./pages/student/MyLearning";
+import Profile from "./pages/student/Profile";
+import SearchPage from "./pages/student/SearchPage";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
+import ApplyForAid from "./pages/student/AidPage";
+import EmailResponder from "./pages/admin/EmailResponder";
 
 const appRouter = createBrowserRouter([
   {
@@ -90,6 +99,14 @@ const appRouter = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "apply-for-aid/:courseId",
+        element: (
+          <ProtectedRoute>
+            <ApplyForAid />
+          </ProtectedRoute>
+        ),
+      },
 
       // admin routes start from here
       {
@@ -107,6 +124,10 @@ const appRouter = createBrowserRouter([
           {
             path: "course",
             element: <CourseTable />,
+          },
+          {
+            path: "email-responder",
+            element: <EmailResponder />,
           },
           {
             path: "course/create",
@@ -134,6 +155,14 @@ function App() {
   return (
     <main>
       <ThemeProvider>
+        <header>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+        </header>
         <RouterProvider router={appRouter} />
       </ThemeProvider>
     </main>

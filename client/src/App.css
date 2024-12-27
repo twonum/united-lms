@@ -1,0 +1,29 @@
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-80px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fadeInDown {
+  animation: fadeInDown 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.animate-slideInUp {
+  animation: slideInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}

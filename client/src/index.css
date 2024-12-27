@@ -4,36 +4,58 @@
 
 @layer base {
   :root {
-    --background: 0 0% 0%; /* Black background for light theme */
-    --foreground: 0 0% 100%; /* White text for contrast */
-    --card: 0 0% 15%; /* Slightly lighter black for cards */
-    --card-foreground: 0 0% 100%; /* White text for cards */
+    --background: 0 0% 0%;
+    /* Black background for light theme */
+    --foreground: 0 0% 100%;
+    /* White text for contrast */
+    --card: 0 0% 15%;
+    /* Slightly lighter black for cards */
+    --card-foreground: 0 0% 100%;
+    /* White text for cards */
     --popover: 0 0% 15%;
     --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 0%; /* Primary is black */
-    --primary-foreground: 0 0% 100%; /* White text for primary elements */
-    --secondary: 0 0% 20%; /* Dark gray for secondary elements */
-    --secondary-foreground: 0 0% 100%; /* White text for secondary elements */
-    --muted: 0 0% 10%; /* Very dark muted background */
-    --muted-foreground: 0 0% 60%; /* Light gray for muted text */
-    --accent: 0 0% 20%; /* Accent elements */
-    --accent-foreground: 0 0% 100%; /* White for accent text */
-    --destructive: 0 62.8% 30.6%; /* Red for destructive actions */
-    --destructive-foreground: 0 0% 100%; /* White text for destructive elements */
-    --border: 0 0% 20%; /* Dark gray borders */
-    --input: 0 0% 10%; /* Input background */
-    --ring: 0 0% 100%; /* Bright white ring */
-    --radius: 0.5rem; /* Border radius */
+    --primary: 0 0% 0%;
+    /* Primary is black */
+    --primary-foreground: 0 0% 100%;
+    /* White text for primary elements */
+    --secondary: 0 0% 20%;
+    /* Dark gray for secondary elements */
+    --secondary-foreground: 0 0% 100%;
+    /* White text for secondary elements */
+    --muted: 0 0% 10%;
+    /* Very dark muted background */
+    --muted-foreground: 0 0% 60%;
+    /* Light gray for muted text */
+    --accent: 0 0% 20%;
+    /* Accent elements */
+    --accent-foreground: 0 0% 100%;
+    /* White for accent text */
+    --destructive: 0 62.8% 30.6%;
+    /* Red for destructive actions */
+    --destructive-foreground: 0 0% 100%;
+    /* White text for destructive elements */
+    --border: 0 0% 20%;
+    /* Dark gray borders */
+    --input: 0 0% 10%;
+    /* Input background */
+    --ring: 0 0% 100%;
+    /* Bright white ring */
+    --radius: 0.5rem;
+    /* Border radius */
   }
 
   .dark {
-    --background: 0 0% 0%; /* Black background for dark theme */
-    --foreground: 0 0% 100%; /* White text for contrast */
-    --card: 0 0% 15%; /* Slightly lighter black for cards */
+    --background: 0 0% 0%;
+    /* Black background for dark theme */
+    --foreground: 0 0% 100%;
+    /* White text for contrast */
+    --card: 0 0% 15%;
+    /* Slightly lighter black for cards */
     --card-foreground: 0 0% 100%;
     --popover: 0 0% 15%;
     --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 0%; /* Primary is black */
+    --primary: 0 0% 0%;
+    /* Primary is black */
     --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 20%;
     --secondary-foreground: 0 0% 100%;
@@ -53,7 +75,40 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-80px) scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100px) scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fadeInDown {
+  animation: fadeInDown 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.animate-slideInUp {
+  animation: slideInUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }

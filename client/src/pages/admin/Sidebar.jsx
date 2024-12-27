@@ -31,6 +31,14 @@ const Sidebar = () => {
               <SquareLibrary size={22} className="text-[#ecf0f1]" />
               <span className="text-lg font-medium">Courses</span>
             </Link>
+            {/* Email Responder */}
+            <Link
+              to="email-responder"
+              className="flex items-center gap-3 text-white hover:text-[#1abc9c] dark:hover:text-[#16A085] border-b border-transparent hover:border-[#1abc9c] dark:hover:border-[#16A085] transition-all duration-300"
+            >
+              <SquareLibrary size={22} className="text-[#ecf0f1]" />
+              <span className="text-lg font-medium">Entertain Emails</span>
+            </Link>
           </nav>
         </div>
 

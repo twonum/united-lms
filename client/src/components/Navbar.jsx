@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Menu, School } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,15 +13,6 @@ import {
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import DarkMode from "@/DarkMode";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogoutUserMutation } from "@/features/api/authApi";
 import { toast } from "sonner";
@@ -32,6 +23,7 @@ const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
   const [logoutUser, { data, isSuccess }] = useLogoutUserMutation();
   const navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const logoutHandler = async () => {
     await logoutUser();
@@ -44,73 +36,96 @@ const Navbar = () => {
     }
   }, [isSuccess, data, navigate]);
 
+  const handleDropdownClose = () => {
+    setIsDropdownOpen(false); // Close the dropdown when an item is clicked
+  };
+
   return (
     <div className="h-16 fixed top-0 left-0 right-0 bg-transparent z-10 shadow-2xl transition-all duration-300 ease-in-out">
       <div className="max-w-7xl mx-auto hidden md:flex justify-between items-center gap-12 h-full px-6 backdrop-blur-md bg-opacity-60">
         <div className="flex items-center gap-3">
           <School size={30} color="white" />
           <Link to="/">
-            <h1 className="font-extrabold text-3xl text-white hover:text-gray-400 transition-colors duration-300 ease-in-out">
+            <h1 className="font-extrabold text-3xl text-white hover:text-rose-600 transition-colors duration-300 ease-in-out">
               United LMS
             </h1>
           </Link>
         </div>
         <div className="flex items-center gap-8">
           {user ? (
-            <DropdownMenu>
+            <DropdownMenu
+              open={isDropdownOpen}
+              onOpenChange={setIsDropdownOpen}
+            >
               <DropdownMenuTrigger asChild>
-                <Avatar className="cursor-pointer hover:scale-105 transition-transform duration-300 ease-in-out">
+                <Avatar className="cursor-pointer relative overflow-hidden rounded-full w-12 h-12 hover:scale-110 transition-transform duration-500 ease-in-out transform-gpu hover:rotate-[15deg] hover:shadow-xl hover:drop-shadow-[0_0_80px rgba(255,182,193,1)] hover:ring-4 hover:ring-teal-500">
+                  <div className="absolute inset-0 bg-gradient-to-t from-pink-500 via-teal-500 to-transparent opacity-0 hover:opacity-40 transition-all duration-500 ease-in-out"></div>
                   <AvatarImage
                     src={user?.photoUrl || "https://github.com/shadcn.png"}
                     alt="User Avatar"
+                    className="rounded-full border-4 border-lime-600 shadow-inner hover:border-lime-400 transition-all duration-500 transform-gpu"
                   />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarFallback className="bg-gradient-to-r from-pink-500 to-teal-500 text-white font-extrabold text-2xl shadow-[0_0_15px rgba(255,105,180,1)] hover:text-teal-300 transition-all duration-500 ease-in-out">
+                    CN
+                  </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 bg-transparent border border-gray-700 shadow-xl rounded-lg transition-all duration-300">
-                <DropdownMenuLabel className="font-semibold text-white text-lg">
+              <DropdownMenuContent className="w-[400px] h-[600px] bg-transparent border border-lime-500 shadow-[0_30px_150px_rgba(0,0,0,0.9)] rounded-[50px] transform scale-90 origin-top hover:scale-100 transition-transform duration-1200 ease-out overflow-y-auto">
+                <DropdownMenuLabel className="font-extrabold text-center text-lime-600 text-4xl py-8 animate-fadeInDown tracking-wide ">
                   My Account
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
+                <DropdownMenuSeparator className="border-lime-500 my-6" />
+                <DropdownMenuGroup className="flex flex-col items-center gap-10">
+                  <DropdownMenuItem
+                    className="w-full animate-slideInUp"
+                    onClick={handleDropdownClose}
+                  >
                     <Link
                       to="/"
-                      className="text-white hover:text-gray-300 py-2 px-4 rounded-md transition-all duration-300"
+                      className="text-white w-full text-center justify-center items-center hover:text-lime-300 py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-r from-gray-900 via-pink-800 to-gray-900 hover:bg-gradient-to-r hover:from-pink-700 hover:to-teal-600 shadow-lg "
                     >
                       Home
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="w-full animate-slideInUp"
+                    onClick={handleDropdownClose}
+                  >
                     <Link
                       to="/my-learning"
-                      className="text-white hover:text-gray-300 py-2 px-4 rounded-md transition-all duration-300"
+                      className="text-white w-full text-center justify-center items-center hover:text-teal-300 py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-r from-gray-900 via-teal-800 to-gray-900 hover:bg-gradient-to-r hover:from-teal-700 hover:to-emerald-600 shadow-lg"
                     >
                       My Learning
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="w-full animate-slideInUp"
+                    onClick={handleDropdownClose}
+                  >
                     <Link
                       to="/profile"
-                      className="text-white hover:text-gray-300 py-2 px-4 rounded-md transition-all duration-300"
+                      className="text-white w-full text-center justify-center items-center hover:text-pink-300 py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-r from-gray-900 via-pink-800 to-gray-900 hover:bg-gradient-to-r hover:from-pink-700 hover:to-teal-600 shadow-lg "
                     >
                       Edit Profile
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={logoutHandler}
-                    className="text-red-500 hover:text-red-400 py-2 px-4 rounded-md transition-all duration-300"
+                    className="w-full text-center justify-center items-center text-sky-50 hover:text-red-400 py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-r from-gray-900 via-red-800 to-gray-900 hover:bg-gradient-to-r hover:from-red-700 hover:to-pink-600 shadow-lg animate-slideInUp"
                   >
                     Log out
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 {user?.role === "instructor" && (
                   <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
+                    <DropdownMenuSeparator className="border-lime-500 my-6" />
+                    <DropdownMenuItem
+                      onClick={handleDropdownClose}
+                      className="w-full animate-slideInUp"
+                    >
                       <Link
                         to="/admin/dashboard"
-                        className="text-white hover:text-gray-300 py-2 px-4 rounded-md transition-all duration-300"
+                        className="text-teal-200 w-full text-center justify-center items-center hover:text-emerald-200 py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-r from-gray-900 via-emerald-800 to-gray-900 hover:bg-gradient-to-r hover:from-emerald-700 hover:to-lime-600 shadow-lg "
                       >
                         Dashboard
                       </Link>

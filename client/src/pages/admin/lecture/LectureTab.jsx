@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,8 +20,6 @@ import {
 } from "@/features/api/courseApi";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 const MEDIA_API = "http://localhost:8080/api/v1/media";
@@ -32,8 +31,11 @@ const LectureTab = () => {
   const [mediaProgress, setMediaProgress] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [btnDisable, setBtnDisable] = useState(true);
+  const [isPressed, setIsPressed] = useState(false); // State to track button press
   const params = useParams();
   const { courseId, lectureId } = params;
+
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const { data: lectureData } = useGetLectureByIdQuery(lectureId);
   const lecture = lectureData?.lecture;
@@ -83,6 +85,7 @@ const LectureTab = () => {
   };
 
   const editLectureHandler = async () => {
+    setIsPressed(true); // Mark button as pressed
     await edtiLecture({
       lectureTitle,
       videoInfo: uploadVideInfo,
@@ -90,6 +93,11 @@ const LectureTab = () => {
       courseId,
       lectureId,
     });
+
+    if (isSuccess) {
+      toast.success(data.message);
+      navigate(`/course/${courseId}/lectures`); // Navigate to lectures page
+    }
   };
 
   const removeLectureHandler = async () => {
@@ -185,7 +193,11 @@ const LectureTab = () => {
             <Button
               disabled={isLoading || btnDisable}
               onClick={editLectureHandler}
-              className="bg-green-600 hover:bg-green-700 text-white transition-all"
+              className={`transition-all text-white ${
+                isPressed
+                  ? "bg-blue-600 hover:bg-blue-500"
+                  : "bg-green-600 hover:bg-green-700"
+              }`}
             >
               {isLoading ? (
                 <>

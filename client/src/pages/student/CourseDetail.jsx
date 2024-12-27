@@ -1,7 +1,7 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-constant-condition */
-import BuyCourseButton from "@/components/BuyCourseButton";
-import { Button } from "@/components/ui/button";
+// eslint-disable-next-line no-unused-vars
+import React from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import ReactPlayer from "react-player";
 import {
   Card,
   CardContent,
@@ -10,129 +10,141 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useGetCourseDetailWithStatusQuery } from "@/features/api/purchaseApi";
 import { BadgeInfo, Lock, PlayCircle } from "lucide-react";
-import React from "react";
-import ReactPlayer from "react-player";
-import { useNavigate, useParams } from "react-router-dom";
-import StarryBackground from "@/components/StarryBackground"; // Add the StarryBackground component
+import StarryBackground from "@/components/StarryBackground";
+import BuyCourseButton from "@/components/BuyCourseButton";
+import { useGetCourseDetailWithStatusQuery } from "@/features/api/purchaseApi";
 
 const CourseDetail = () => {
-  const params = useParams();
-  const courseId = params.courseId;
+  const { courseId } = useParams();
   const navigate = useNavigate();
   const { data, isLoading, isError } =
     useGetCourseDetailWithStatusQuery(courseId);
 
-  if (isLoading) return <h1>Loading...</h1>;
-  if (isError) return <h>Failed to load course details</h>;
+  if (isLoading) return <h1 className="text-center text-white">Loading...</h1>;
+  if (isError || !data?.course)
+    return (
+      <h1 className="text-center text-red-600">
+        Failed to load course details
+      </h1>
+    );
 
   const { course, purchased } = data;
 
   const handleContinueCourse = () => {
-    if (purchased) {
-      navigate(`/course-progress/${courseId}`);
-    }
+    navigate(`/course-progress/${courseId}`);
+  };
+
+  const handleApplyForAid = () => {
+    navigate(`/apply-for-aid/${courseId}`);
   };
 
   return (
     <div className="relative min-h-screen bg-transparent">
-      {/* Starry Background */}
+      {/* Background */}
       <div className="absolute inset-0 z-[-1]">
         <StarryBackground />
       </div>
 
-      {/* Hero Section */}
-      <div className="relative bg-none text-white backdrop-blur-md bg-opacity-60 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-30"
-          style={{
-            backgroundImage: 'url("/path-to-your-starry-background.jpg")', // Ensure to update path
-          }}
-        ></div>
-        <div className="max-w-7xl mx-auto py-12 px-6 md:px-8 relative z-10 text-center">
-          <h1 className="font-extrabold text-4xl md:text-5xl text-white leading-tight mb-4">
-            {course?.courseTitle}
+      {/* Course Header */}
+      <div className="relative text-white bg-none backdrop-blur-md bg-opacity-60">
+        <div className="max-w-7xl mx-auto py-12 px-6 text-center">
+          <h1 className="font-extrabold text-4xl md:text-5xl">
+            {course.courseTitle || "Course Title"}
           </h1>
-          <p className="text-lg md:text-xl text-gray-200 mb-4">
-            Course Sub-title
-          </p>
-          <p className="text-gray-300">
+          <p className="text-lg text-gray-200 mt-2">Course Sub-title</p>
+          <p className="text-gray-300 mt-4">
             Created By{" "}
             <span className="text-[#C0C4FC] underline italic">
-              {course?.creator.name}
+              {course.creator?.name || "Unknown Creator"}
             </span>
           </p>
           <div className="flex justify-center items-center gap-4 text-sm text-gray-400 mt-4">
             <BadgeInfo size={16} />
-            <p>Last updated {course?.createdAt.split("T")[0]}</p>
-            <p>Students enrolled: {course?.enrolledStudents.length}</p>
+            <p>Last updated {course.createdAt?.split("T")[0] || "N/A"}</p>
+            <p>Students enrolled: {course.enrolledStudents?.length || 0}</p>
           </div>
         </div>
       </div>
 
-      {/* Course Description and Content Section */}
-      <div className="max-w-7xl mx-auto my-10 px-6 md:px-8 flex flex-col lg:flex-row justify-between gap-12">
+      {/* Course Details */}
+      <div className="max-w-7xl mx-auto my-10 px-6 flex flex-col lg:flex-row gap-12">
+        {/* Left Column */}
         <div className="w-full lg:w-2/3 space-y-8">
-          <h1 className="font-bold text-2xl text-white mb-6">Description</h1>
+          <h1 className="font-bold text-2xl text-white">Description</h1>
           <p
-            className="text-sm text-gray-300 mb-8"
-            dangerouslySetInnerHTML={{ __html: course.description }}
+            className="text-sm text-gray-300"
+            dangerouslySetInnerHTML={{
+              __html: course.description || "No description available.",
+            }}
           />
-          <Card className="bg-opacity-80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg bg-transparent">
+
+          <Card className="bg-opacity-80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg">
             <CardHeader>
               <CardTitle className="text-white">Course Content</CardTitle>
               <CardDescription className="text-gray-400">
-                {course.lectures.length} lectures
+                {course.lectures?.length || 0} lectures
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {course.lectures.map((lecture, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-3 text-sm text-gray-400"
-                >
-                  <span>
-                    {true ? <PlayCircle size={14} /> : <Lock size={14} />}
-                  </span>
-                  <p>{lecture.lectureTitle}</p>
-                </div>
-              ))}
+              {course.lectures?.length > 0 ? (
+                course.lectures.map((lecture, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 text-sm text-gray-400"
+                  >
+                    {purchased ? <PlayCircle size={14} /> : <Lock size={14} />}
+                    <p>{lecture.lectureTitle}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-400">No lectures available.</p>
+              )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Video and Pricing Section */}
+        {/* Right Column */}
         <div className="w-full lg:w-1/3 space-y-6">
-          <Card className="bg-opacity-80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg bg-transparent">
-            <CardContent className="p-4 flex flex-col">
+          <Card className="bg-opacity-80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg">
+            <CardContent>
               <div className="w-full aspect-video mb-6">
                 <ReactPlayer
                   width="100%"
-                  height={"100%"}
-                  url={course.lectures[0].videoUrl}
-                  controls={true}
+                  height="100%"
+                  url={course.lectures?.[0]?.videoUrl || ""}
+                  controls
+                  className="rounded-md"
                 />
               </div>
-              <h1 className="text-white text-xl font-semibold mb-2">
-                {course.lectures[0].lectureTitle}
+              <h1 className="text-xl text-white font-semibold">
+                {course.lectures?.[0]?.lectureTitle || "No Lecture Available"}
               </h1>
               <Separator className="my-3 border-gray-300" />
-              <h1 className="text-lg md:text-xl font-semibold text-white">
-                Course Price: ${course.price}
+              <h1 className="text-lg text-white font-semibold">
+                Course Price: ${course.price || "Free"}
               </h1>
             </CardContent>
-            <CardFooter className="flex justify-center p-4">
+            <CardFooter className="flex justify-between p-4">
               {purchased ? (
                 <Button
                   onClick={handleContinueCourse}
-                  className="w-full bg-black border-2 border-white text-white hover:border-white focus:ring-2 focus:ring-white rounded-md transition-all duration-300 ease-in-out hover:scale-105"
+                  className="w-full bg-black text-white hover:bg-pink-600 transition-all"
                 >
                   Continue Course
                 </Button>
               ) : (
-                <BuyCourseButton courseId={courseId} />
+                <>
+                  <BuyCourseButton courseId={courseId} />
+                  <Button
+                    onClick={handleApplyForAid}
+                    className="ml-2 w-full bg-black text-white hover:bg-red-600"
+                  >
+                    Apply for Aid
+                  </Button>
+                </>
               )}
             </CardFooter>
           </Card>

@@ -76,7 +76,7 @@ const CreateLecture = () => {
           <Button
             disabled={isLoading}
             onClick={createLectureHandler}
-            className="bg-[#142a22] text-white hover:bg-[#1f664b] disabled:bg-gray-600 rounded-lg transition-all"
+            className="bg-lime-600 text-white hover:bg-lime-800 disabled:bg-gray-600 rounded-lg transition-all"
           >
             {isLoading ? (
               <>

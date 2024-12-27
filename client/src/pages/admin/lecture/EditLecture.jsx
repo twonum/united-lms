@@ -17,7 +17,7 @@ const EditLecture = () => {
             <Button
               size="icon"
               variant="outline"
-              className="rounded-full border-white/30 text-white hover:bg-[#00F798] hover:border-[#00F798] transition-all"
+              className="rounded-full border-white/30 text-white hover:bg-emerald-700 hover:border-[#00F798] transition-all"
             >
               <ArrowLeft size={16} />
             </Button>

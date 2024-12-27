@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -89,7 +90,7 @@ const CourseProgress = () => {
           <Button
             onClick={completed ? handleInCompleteCourse : handleCompleteCourse}
             className={`border-2 border-transparent text-white 
-              hover:border-white hover:shadow-[0_0_10px_2px_rgba(255,255,255,0.6)] 
+              hover:border-white hover:bg-pink-600 hover:shadow-[0_0_10px_2px_rgba(255,255,255,0.6)] 
               transition-shadow duration-300 disabled:opacity-50`}
           >
             {completed ? (

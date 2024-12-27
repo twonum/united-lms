@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,16 +44,16 @@ const AddCourse = () => {
     }
   }, [isSuccess, error]);
 
-  // Memoized category items to avoid re-renders
-  const categoryItems = useMemo(
-    () =>
-      categories.map((category) => (
-        <SelectItem key={category} value={category}>
-          {category}
-        </SelectItem>
-      )),
-    []
-  );
+  // // Memoized category items to avoid re-renders
+  // const categoryItems = useMemo(
+  //   () =>
+  //     categories.map((category) => (
+  //       <SelectItem key={category} value={category}>
+  //         {category}
+  //       </SelectItem>
+  //     )),
+  //   []
+  // );
 
   return (
     <div className="flex flex-col items-center px-4 py-6 sm:px-6 lg:px-12 bg-transparent backdrop-blur-xl rounded-lg">
@@ -95,7 +97,22 @@ const AddCourse = () => {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Categories</SelectLabel>
-                  {categoryItems}
+                  <SelectItem value="Next JS">Next JS</SelectItem>
+                  <SelectItem value="Data Science">Data Science</SelectItem>
+                  <SelectItem value="Frontend Development">
+                    Frontend Development
+                  </SelectItem>
+                  <SelectItem value="Fullstack Development">
+                    Fullstack Development
+                  </SelectItem>
+                  <SelectItem value="MERN Stack Development">
+                    MERN Stack Development
+                  </SelectItem>
+                  <SelectItem value="Javascript">Javascript</SelectItem>
+                  <SelectItem value="Python">Python</SelectItem>
+                  <SelectItem value="Docker">Docker</SelectItem>
+                  <SelectItem value="MongoDB">MongoDB</SelectItem>
+                  <SelectItem value="HTML">HTML</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -113,7 +130,7 @@ const AddCourse = () => {
             <Button
               disabled={isLoading}
               onClick={createCourseHandler}
-              className="w-full sm:w-auto border-gray-300 text-gray-700 hover:border-blue-500 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              className="w-full sm:w-auto border-gray-300 text-gray-700 hover:border-blue-500 hover:bg-purple-600 hover:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center">

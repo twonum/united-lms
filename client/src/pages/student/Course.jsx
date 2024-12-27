@@ -39,7 +39,7 @@ const Course = ({ course }) => {
                   {course.creator?.name}
                 </h1>
               </div>
-              <Badge className="bg-[#00F798] text-white px-3 py-1 text-xs rounded-full shadow-lg transform transition-all duration-300 ease-in-out hover:scale-110">
+              <Badge className="bg-emerald-900 text-white px-3 py-1 text-xs rounded-full shadow-lg transform transition-all duration-300 ease-in-out hover:scale-110">
                 {course.courseLevel}
               </Badge>
             </div>

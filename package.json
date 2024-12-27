@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@fontsource/poppins": "^5.1.0",
+    "@fontsource/roboto": "^5.1.0",
+    "pdfkit": "^0.15.2"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^6.4.17"
+  }
+}

@@ -12,9 +12,6 @@ import {
 import StarryBackground from "@/components/StarryBackground";
 
 const Dashboard = () => {
-  // Conversion rate from the original currency to PKR
-  const conversionRate = 278; // Example rate, replace with the actual rate
-
   // eslint-disable-next-line no-unused-vars
   const { data, isSuccess, isError, isLoading } = useGetPurchasedCoursesQuery();
 
@@ -39,15 +36,19 @@ const Dashboard = () => {
   // Convert course prices to PKR
   const courseData = purchasedCourse.map((course) => ({
     name: course.courseId.courseTitle,
-    price: Math.round(course.courseId.coursePrice * conversionRate), // Converted to PKR
+    //price: Math.round(course.courseId.coursePrice * conversionRate), // Converted to PKR
+    price: course.courseId.coursePrice,
   }));
 
   // Calculate total revenue in PKR
+  // const totalRevenue = purchasedCourse.reduce(
+  //   (acc, element) => acc + (element.amount || 0) * conversionRate,
+  //   0
+  // );
   const totalRevenue = purchasedCourse.reduce(
-    (acc, element) => acc + (element.amount || 0) * conversionRate,
+    (acc, element) => acc + (element.amount || 0),
     0
   );
-
   const totalSales = purchasedCourse.length;
 
   return (
@@ -77,9 +78,7 @@ const Dashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-white">
-              PKR {totalRevenue.toLocaleString()}
-            </p>
+            <p className="text-3xl font-bold text-white">PKR {totalRevenue}</p>
           </CardContent>
         </Card>
 
@@ -102,12 +101,7 @@ const Dashboard = () => {
                   interval={0} // Display all labels
                 />
                 <YAxis stroke="#ffffff" />
-                <Tooltip
-                  formatter={(value) => [
-                    `PKR ${value.toLocaleString()}`,
-                    "Price",
-                  ]}
-                />
+                <Tooltip formatter={(value, name) => [`PKR ${value}`, name]} />
                 <Line
                   type="monotone"
                   dataKey="price"

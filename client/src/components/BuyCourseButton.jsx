@@ -33,8 +33,8 @@ const BuyCourseButton = ({ courseId }) => {
     <Button
       disabled={isLoading}
       onClick={purchaseCourseHandler}
-      className={`w-full border-2 border-transparent bg-emerald-950 text-white 
-    hover:border-white hover:shadow-[0_0_10px_2px_rgba(255,255,255,0.6)] 
+      className={`w-full border-2 border-white bg-black hover:bg-pink-600 text-white 
+    hover:border-white focus:ring-2 focus:ring-white hover:shadow-[0_0_10px_2px_rgba(255,255,255,0.6)] 
     transition duration-300 ease-in-out 
     disabled:opacity-50 disabled:cursor-not-allowed`}
     >

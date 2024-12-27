@@ -1,6 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -23,12 +21,13 @@ import {
   useUpdateUserMutation,
 } from "@/features/api/authApi";
 import { toast } from "sonner";
-import StarryBackground from "@/components/StarryBackground"; // Adding a dynamic starry background component
+import StarryBackground from "@/components/StarryBackground";
 
 const Profile = () => {
   const [name, setName] = useState("");
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data, isLoading, refetch } = useLoadUserQuery();
   const [
@@ -50,6 +49,7 @@ const Profile = () => {
     if (isSuccess) {
       refetch();
       toast.success(updateUserData?.message || "Profile updated successfully.");
+      setIsDialogOpen(false); // Close the dialog on success
     }
     if (isError) {
       toast.error(error?.message || "Failed to update profile.");
@@ -87,7 +87,6 @@ const Profile = () => {
 
   return (
     <div className="relative min-h-screen">
-      {/* Starry Background */}
       <StarryBackground />
 
       <div className="max-w-4xl mx-auto px-4 my-10 relative z-10">
@@ -114,11 +113,11 @@ const Profile = () => {
               value={user.role?.toUpperCase() || "Not assigned"}
             />
 
-            <Dialog onClose={() => setName("")}>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button
                   size="sm"
-                  className="mt-2 bg-transparent border-2 border-white text-white hover:bg-white hover:text-black"
+                  className="mt-2 bg-transparent border-2 border-white text-white hover:bg-lime-700 hover:text-black"
                 >
                   Edit Profile
                 </Button>
@@ -127,8 +126,8 @@ const Profile = () => {
                 <DialogHeader>
                   <DialogTitle className="text-white">Edit Profile</DialogTitle>
                   <DialogDescription className="text-white">
-                    Make changes to your profile here. Click save when you're
-                    done.
+                    Make changes to your profile here. Click save when
+                    you&apos;re done.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -158,12 +157,7 @@ const Profile = () => {
                 <DialogFooter>
                   <Button
                     disabled={updateUserIsLoading}
-                    onClick={async () => {
-                      await updateUserHandler();
-                      if (!errorMessage) {
-                        setTimeout(() => refetch(), 500);
-                      }
-                    }}
+                    onClick={updateUserHandler}
                     className="bg-indigo-600 hover:bg-indigo-700"
                   >
                     {updateUserIsLoading ? (
@@ -180,7 +174,7 @@ const Profile = () => {
 
         <div>
           <h2 className="font-medium text-lg text-white">
-            Courses You're Enrolled In
+            Courses You&apos;re Enrolled In
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 my-5">
             {user.enrolledCourses?.length > 0 ? (
@@ -189,7 +183,7 @@ const Profile = () => {
               ))
             ) : (
               <h3 className="col-span-full text-center text-gray-500">
-                You haven't enrolled in any courses yet.
+                You haven&apos;t enrolled in any courses yet.
               </h3>
             )}
           </div>
