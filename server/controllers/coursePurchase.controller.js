@@ -95,10 +95,10 @@ export const stripeWebhook = async (req, res) => {
         return res.status(404).json({ message: "Purchase not found" });
       }
 
-      // const user = await User.findById(purchase.userId);
-      // if (!user) {
-      //   return res.status(404).json({ message: "User not found" });
-      // }
+      const user = await User.findById(purchase.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
 
       if (session.amount_total) {
         purchase.amount = session.amount_total / 100;
@@ -144,10 +144,7 @@ export const getCourseDetailWithPurchaseStatus = async (req, res) => {
     if (!course) return res.status(404).json({ message: "Course not found!" });
 
     const purchased = await CoursePurchase.findOne({ userId, courseId });
-    console.log(purchased);
-    if (!course) {
-      return res.status(404).json({ message: "course not found!" });
-    }
+
     return res.status(200).json({
       course,
       purchased: !!purchased,
@@ -157,6 +154,7 @@ export const getCourseDetailWithPurchaseStatus = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 export const getAllPurchasedCourse = async (_, res) => {
   try {
