@@ -6,15 +6,8 @@ import { appStore } from "./app/store";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { Toaster } from "./components/ui/sonner";
 import { useLoadUserQuery } from "./features/api/authApi";
-import { ClerkProvider } from "@clerk/clerk-react";
 import { Provider } from "react-redux";
 
-// Import your Publishable Key
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-
-if (!PUBLISHABLE_KEY) {
-  throw new Error("Missing Publishable Key");
-}
 // eslint-disable-next-line react/prop-types, react-refresh/only-export-components
 const Custom = ({ children }) => {
   const { isLoading } = useLoadUserQuery();
@@ -25,9 +18,8 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={appStore}>
       <Custom>
-        <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
-          <App />
-        </ClerkProvider>
+        <App />
+
         <Toaster />
       </Custom>
     </Provider>

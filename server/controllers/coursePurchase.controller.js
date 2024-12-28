@@ -3,7 +3,8 @@ import { Course } from "../models/course.model.js";
 import { CoursePurchase } from "../models/coursePurchase.model.js";
 import { Lecture } from "../models/lecture.model.js";
 import { User } from "../models/user.model.js";
-import sendCertificateEmail from "../utils/sendCertificateEmail.js";
+import sendInvoiceEmail from "../utils/sendInvoiceEmail.js";
+
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -94,10 +95,10 @@ export const stripeWebhook = async (req, res) => {
         return res.status(404).json({ message: "Purchase not found" });
       }
 
-      const user = await User.findById(purchase.userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
+      // const user = await User.findById(purchase.userId);
+      // if (!user) {
+      //   return res.status(404).json({ message: "User not found" });
+      // }
 
       if (session.amount_total) {
         purchase.amount = session.amount_total / 100;
@@ -122,8 +123,7 @@ export const stripeWebhook = async (req, res) => {
         { $addToSet: { enrolledStudents: purchase.userId } },
         { new: true }
       );
-
-      sendCertificateEmail(user.email, user.name);
+      sendInvoiceEmail(user.email, user.name, purchase.courseId.courseTitle, purchase.amount);
     } catch (error) {
       console.error("Error handling event:", error);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -144,7 +144,10 @@ export const getCourseDetailWithPurchaseStatus = async (req, res) => {
     if (!course) return res.status(404).json({ message: "Course not found!" });
 
     const purchased = await CoursePurchase.findOne({ userId, courseId });
-
+    console.log(purchased);
+    if (!course) {
+      return res.status(404).json({ message: "course not found!" });
+    }
     return res.status(200).json({
       course,
       purchased: !!purchased,
@@ -157,15 +160,18 @@ export const getCourseDetailWithPurchaseStatus = async (req, res) => {
 
 export const getAllPurchasedCourse = async (_, res) => {
   try {
-    const purchasedCourses = await CoursePurchase.find({
+    const purchasedCourse = await CoursePurchase.find({
       status: "completed",
     }).populate("courseId");
-
+    if (!purchasedCourse) {
+      return res.status(404).json({
+        purchasedCourse: [],
+      });
+    }
     return res.status(200).json({
-      purchasedCourses: purchasedCourses || [],
+      purchasedCourse,
     });
   } catch (error) {
-    console.error("Error fetching purchased courses:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.log(error);
   }
 };

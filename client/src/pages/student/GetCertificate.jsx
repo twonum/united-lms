@@ -1,24 +1,67 @@
-/* eslint-disable no-unused-vars */
+// eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import StarryBackground from "@/components/StarryBackground";
 import Swal from "sweetalert2";
+import jsPDF from "jspdf";
 
-const ApplyForAid = () => {
+const GetCertificate = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    reason: "",
+    certificateType: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [canSubmit, setCanSubmit] = useState(true); // Controls whether form can be submitted
-  const [timeoutId, setTimeoutId] = useState(null); // To clear the timeout if needed
+  const [canSubmit, setCanSubmit] = useState(true); // To control the resubmission
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const generateCertificate = () => {
+    const doc = new jsPDF();
+
+    // Set up document style
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(26);
+    doc.text("Certificate of Completion", 105, 50, { align: "center" });
+
+    doc.setFontSize(16);
+    doc.text("This certifies that", 105, 70, { align: "center" });
+
+    doc.setFontSize(24);
+    doc.text(formData.name, 105, 90, { align: "center" });
+
+    doc.setFontSize(16);
+    doc.text(
+      `has successfully completed the ${formData.certificateType} program.`,
+      105,
+      110,
+      { align: "center" }
+    );
+
+    doc.setFontSize(12);
+    doc.text(`Issued to: ${formData.name}`, 105, 130, { align: "center" });
+    doc.text(`Email: ${formData.email}`, 105, 140, { align: "center" });
+    doc.text(`Certificate Type: ${formData.certificateType}`, 105, 150, {
+      align: "center",
+    });
+
+    doc.text("Date: " + new Date().toLocaleDateString(), 105, 160, {
+      align: "center",
+    });
+
+    // Add a border around the certificate (for a more professional look)
+    doc.setLineWidth(0.5);
+    doc.rect(10, 20, 180, 260);
+
+    // Optionally, add a logo or signature (if available)
+    // doc.addImage("logo_url", "PNG", 10, 10, 20, 20); // Example for adding an image/logo
+
+    // Download the generated certificate as a PDF
+    doc.save(`${formData.name}_Certificate.pdf`);
   };
 
   const onSubmit = async (event) => {
@@ -26,87 +69,45 @@ const ApplyForAid = () => {
 
     if (!canSubmit) {
       Swal.fire({
-        title: "You can only apply once every 10 minutes.",
+        title: "You can only request a certificate once every 10 minutes.",
         text: "Please wait before trying again.",
         icon: "warning",
         timer: 4000,
         showConfirmButton: false,
       });
-      return; // Prevent submission if it's within 10 minutes
+      return;
     }
 
-    setIsSubmitting(true); // Set submitting state to true
-    setCanSubmit(false); // Disable form submission temporarily
+    setIsSubmitting(true); // Start the submission process
+    setCanSubmit(false); // Disable further submissions for 10 minutes
 
-    try {
-      const formPayload = new FormData();
-      formPayload.append("access_key", "d5e71c26-c571-44c9-a647-d1d7307f3567");
-      formPayload.append("email", formData.email);
-      formPayload.append("subject", "Financial Aid Application");
-      formPayload.append(
-        "message",
-        `Applicant Name: ${formData.name}\nReason: ${formData.reason}`
-      );
-
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        body: formPayload,
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Show success message
-        Swal.fire({
-          title: "Application Submitted",
-          text: "Your financial aid application has been successfully submitted!",
-          icon: "success",
-          timer: 3000, // 3 seconds for Swal to stay open
-          showConfirmButton: false,
-        });
-
-        // Clear form after submission
-        setFormData({ name: "", email: "", reason: "" });
-
-        // Lock form submission for 10 minutes
-        setTimeout(() => {
-          setCanSubmit(true); // Allow submission again after 10 minutes
-        }, 10 * 60 * 1000); // 10 minutes in milliseconds
-      } else {
-        // Error message if the API returns an error
-        Swal.fire({
-          title: "Error",
-          text: data.message || "Something went wrong. Please try again.",
-          icon: "error",
-          timer: 3000,
-          showConfirmButton: false,
-        });
-      }
-    } catch (error) {
-      // Catch any network or other errors
+    // Simulate certificate generation process
+    setTimeout(() => {
       Swal.fire({
-        title: "Error",
-        text: "An error occurred while submitting your application. Please try again.",
-        icon: "error",
+        title: "Certificate Generated",
+        text: "Your certificate has been successfully generated. You can now download it.",
+        icon: "success",
         timer: 3000,
         showConfirmButton: false,
       });
-    } finally {
-      setIsSubmitting(false); // Reset submitting state
-    }
+
+      // Generate the certificate after successful submission
+      generateCertificate();
+      setFormData({ name: "", email: "", certificateType: "" }); // Reset form after generation
+
+      // Re-enable the form submission after 10 minutes
+      setTimeout(() => setCanSubmit(true), 600000); // 10 minutes in milliseconds
+      setIsSubmitting(false); // Reset the submitting state
+    }, 2000); // Simulate a delay of 2 seconds for "processing"
   };
 
   return (
     <div className="relative min-h-screen bg-transparent">
-      <div className="absolute inset-0 z-[-1]">
-        <StarryBackground />
-      </div>
-
       <div className="flex justify-center items-center min-h-screen px-6 md:px-8">
         <Card className="bg-opacity-80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg bg-transparent w-full max-w-lg">
           <CardHeader>
             <CardTitle className="text-white text-center text-2xl font-bold">
-              Apply for Financial Aid
+              Get Your Certificate
             </CardTitle>
           </CardHeader>
           <Separator className="my-4 border-gray-500" />
@@ -150,28 +151,28 @@ const ApplyForAid = () => {
 
               <div>
                 <label
-                  htmlFor="reason"
+                  htmlFor="certificateType"
                   className="block text-sm font-medium text-gray-300"
                 >
-                  Why do you need financial aid?
+                  Certificate Type
                 </label>
-                <textarea
-                  id="reason"
-                  name="reason"
-                  value={formData.reason}
+                <input
+                  type="text"
+                  id="certificateType"
+                  name="certificateType"
+                  value={formData.certificateType}
                   onChange={handleChange}
                   required
-                  rows="4"
                   className="w-full px-4 py-2 mt-2 bg-transparent border border-gray-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300 hover:border-white"
-                ></textarea>
+                />
               </div>
 
               <Button
                 type="submit"
-                disabled={isSubmitting || !canSubmit} // Disable button while submitting or when resubmission is not allowed
+                disabled={isSubmitting || !canSubmit}
                 className="w-full py-2 bg-transparent border border-white text-white rounded-md hover:bg-white hover:text-black transition-all duration-300 ease-in-out hover:scale-105"
               >
-                {isSubmitting ? "Sending..." : "Submit Application"}
+                {isSubmitting ? "Generating..." : "Get Certificate"}
               </Button>
             </form>
           </CardContent>
@@ -181,4 +182,4 @@ const ApplyForAid = () => {
   );
 };
 
-export default ApplyForAid;
+export default GetCertificate;

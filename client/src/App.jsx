@@ -25,14 +25,9 @@ import HeroSection from "./pages/student/HeroSection";
 import MyLearning from "./pages/student/MyLearning";
 import Profile from "./pages/student/Profile";
 import SearchPage from "./pages/student/SearchPage";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/clerk-react";
 import ApplyForAid from "./pages/student/AidPage";
 import EmailResponder from "./pages/admin/EmailResponder";
+import GetCertificate from "./pages/student/GetCertificate";
 
 const appRouter = createBrowserRouter([
   {
@@ -107,6 +102,15 @@ const appRouter = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        //get certificate
+        path: "get-certificate/:courseId",
+        element: (
+          <ProtectedRoute>
+            <GetCertificate />
+          </ProtectedRoute>
+        ),
+      },
 
       // admin routes start from here
       {
@@ -155,14 +159,6 @@ function App() {
   return (
     <main>
       <ThemeProvider>
-        <header>
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </header>
         <RouterProvider router={appRouter} />
       </ThemeProvider>
     </main>

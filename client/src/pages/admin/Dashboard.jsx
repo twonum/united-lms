@@ -12,7 +12,6 @@ import {
 import StarryBackground from "@/components/StarryBackground";
 
 const Dashboard = () => {
-  // eslint-disable-next-line no-unused-vars
   const { data, isSuccess, isError, isLoading } = useGetPurchasedCoursesQuery();
 
   if (isLoading)
@@ -26,29 +25,28 @@ const Dashboard = () => {
     return (
       <div className="flex items-center justify-center h-full">
         <h1 className="text-lg font-medium text-red-500">
-          Failed to get purchased courses
+          Failed to fetch purchased courses. Please try again later.
         </h1>
       </div>
     );
 
-  const { purchasedCourse } = data || [];
+  // Safely extract purchasedCourse or use an empty array as fallback
+  const purchasedCourse =
+    isSuccess && Array.isArray(data?.purchasedCourse)
+      ? data.purchasedCourse
+      : [];
 
-  // Convert course prices to PKR
+  // Prepare data for visualization
   const courseData = purchasedCourse.map((course) => ({
-    name: course.courseId.courseTitle,
-    //price: Math.round(course.courseId.coursePrice * conversionRate), // Converted to PKR
-    price: course.courseId.coursePrice,
+    name: course?.courseId?.courseTitle || "Unnamed Course",
+    price: course?.courseId?.coursePrice || 0,
   }));
 
-  // Calculate total revenue in PKR
-  // const totalRevenue = purchasedCourse.reduce(
-  //   (acc, element) => acc + (element.amount || 0) * conversionRate,
-  //   0
-  // );
   const totalRevenue = purchasedCourse.reduce(
-    (acc, element) => acc + (element.amount || 0),
+    (acc, element) => acc + (element?.amount || 0),
     0
   );
+
   const totalSales = purchasedCourse.length;
 
   return (
@@ -101,7 +99,7 @@ const Dashboard = () => {
                   interval={0} // Display all labels
                 />
                 <YAxis stroke="#ffffff" />
-                <Tooltip formatter={(value, name) => [`PKR ${value}`, name]} />
+                <Tooltip formatter={(value) => `PKR ${value || 0}`} />
                 <Line
                   type="monotone"
                   dataKey="price"
