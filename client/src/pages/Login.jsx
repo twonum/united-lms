@@ -36,6 +36,7 @@ const Login = () => {
       error: registerError,
       isLoading: registerIsLoading,
       isSuccess: registerIsSuccess,
+      reset: resetRegister,
     },
   ] = useRegisterUserMutation();
 
@@ -46,6 +47,7 @@ const Login = () => {
       error: loginError,
       isLoading: loginIsLoading,
       isSuccess: loginIsSuccess,
+      reset: resetLogin,
     },
   ] = useLoginUserMutation();
 
@@ -54,9 +56,9 @@ const Login = () => {
   const changeInputHandler = (e, type) => {
     const { name, value } = e.target;
     if (type === "signup") {
-      setSignupInput({ ...signupInput, [name]: value });
+      setSignupInput((prev) => ({ ...prev, [name]: value }));
     } else {
-      setLoginInput({ ...loginInput, [name]: value });
+      setLoginInput((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -76,39 +78,53 @@ const Login = () => {
     }
 
     const action = type === "signup" ? registerUser : loginUser;
-    await action(inputData);
+    try {
+      await action(inputData).unwrap(); // Use unwrap to handle errors explicitly
+      // eslint-disable-next-line no-unused-vars
+    } catch (err) {
+      // Errors will now be handled via toast logic in the `useEffect`
+    }
   };
 
   useEffect(() => {
+    // Handle register success
     if (registerIsSuccess && registerData) {
       toast.success(registerData.message || "Signup successful.");
+      resetRegister(); // Clear state after success
     }
+
+    // Handle register error
     if (registerError) {
       const errorMessage =
         registerError?.data?.message ||
         registerError?.error ||
         "Signup failed.";
       toast.error(errorMessage);
+      resetRegister(); // Clear state after error
     }
 
+    // Handle login success
     if (loginIsSuccess && loginData) {
       toast.success(loginData.message || "Login successful.");
       navigate("/"); // Redirect to home page
+      resetLogin(); // Clear state after success
     }
+
+    // Handle login error
     if (loginError) {
       const errorMessage =
         loginError?.data?.message || loginError?.error || "Login failed.";
       toast.error(errorMessage);
+      resetLogin(); // Clear state after error
     }
   }, [
-    loginIsSuccess,
     registerIsSuccess,
-    loginData,
-    registerData,
-    loginError,
     registerError,
+    registerData,
+    loginIsSuccess,
+    loginError,
+    loginData,
   ]);
-
   return (
     <div className="relative min-h-screen bg-transparent">
       {/* Starry Background */}
