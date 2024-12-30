@@ -94,7 +94,7 @@ const CourseProgress = () => {
           <div className="flex gap-4">
             <Button
               onClick={handleCourseCompletion}
-              className="border-2 border-transparent text-gray-100 hover:border-gray-300 hover:bg-pink-600 hover:shadow-[0_0_10px_2px_rgba(255,255,255,0.6)] transition-shadow duration-300 disabled:opacity-50"
+              className="border-2 border-white bg-black text-white hover:border-gray-300 hover:bg-pink-600 hover:shadow-[0_0_10px_2px_rgba(255,255,255,0.6)] transition-shadow duration-300 disabled:opacity-50"
             >
               {completed ? (
                 <div className="flex items-center">
