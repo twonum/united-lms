@@ -21,8 +21,9 @@ const Dynamic3DHeading = () => {
     );
 
     // Create WebGLRenderer with alpha enabled
-    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
 
     // Append renderer's canvas to the DOM
     document.body.appendChild(renderer.domElement);
@@ -38,13 +39,16 @@ const Dynamic3DHeading = () => {
             size: 10,
             height: 3,
             bevelEnabled: true,
-            bevelSize: 0.2,
-            bevelThickness: 0.5,
+            bevelSize: 0.3,
+            bevelThickness: 0.7,
+            bevelSegments: 5,
           });
 
-          const material = new THREE.MeshPhongMaterial({
-            color: 0xffffff,
-            emissive: 0x00ff00,
+          const material = new THREE.MeshStandardMaterial({
+            color: 0x00ffcc,
+            emissive: 0x001a66,
+            metalness: 0.7,
+            roughness: 0.2,
           });
           const textMesh = new THREE.Mesh(geometry, material);
           scene.add(textMesh);
@@ -53,14 +57,18 @@ const Dynamic3DHeading = () => {
           geometry.center();
 
           // Position the camera
-          camera.position.z = 50;
+          camera.position.set(0, 0, 50);
 
           // Add lighting to the scene
-          const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
-          const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-          directionalLight.position.set(5, 5, 5).normalize();
-          scene.add(ambientLight);
-          scene.add(directionalLight);
+          const ambientLight = new THREE.AmbientLight(0x202020); // Subtle ambient light
+          const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+          pointLight.position.set(10, 10, 10);
+          const spotLight = new THREE.SpotLight(0xffaa00, 1);
+          spotLight.position.set(-15, 20, 25);
+          spotLight.angle = Math.PI / 6;
+          spotLight.castShadow = true;
+
+          scene.add(ambientLight, pointLight, spotLight);
 
           // Animation loop to rotate the text
           const animate = () => {
@@ -86,14 +94,17 @@ const Dynamic3DHeading = () => {
     );
 
     // Resize handler for responsiveness
-    window.addEventListener("resize", () => {
+    const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+    };
+
+    window.addEventListener("resize", handleResize);
 
     // Cleanup on unmount
     return () => {
+      window.removeEventListener("resize", handleResize);
       document.body.removeChild(renderer.domElement);
     };
   }, []);

@@ -4,93 +4,67 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import StarryBackground from "@/components/StarryBackground";
+import RichTextEditor from "@/components/RichTextEditor";
 import Swal from "sweetalert2";
+import getGenerativeAIResponse from "../../../scripts/aistudio";
+import { Copy } from "lucide-react";
 
 const EmailResponder = () => {
   const [formData, setFormData] = useState({
     recipientName: "",
     recipientEmail: "",
   });
+  const [aiValue, setAiValue] = useState(""); // For AI-generated message
+  const [input, setInput] = useState({ content: "" }); // For RichTextEditor
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [canSubmit, setCanSubmit] = useState(true); // Prevent resubmission for 10 minutes
-
-  const defaultMessage = `Congratulations {recipientName},
-
-Your financial aid application has been approved! We are delighted to support you in your journey. Please let us know if you have any questions or require further assistance.
-
-Best regards,
-[Your Organization Name]`;
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
+  const handleGenerateDescription = async () => {
+    try {
+      setIsGenerating(true);
+      const prompt = `Generate a professional and engaging email message for the recipient named "${formData.recipientName}" regarding financial aid approval.`;
+      const generatedMessage = await getGenerativeAIResponse(prompt);
 
-    if (!canSubmit) {
+      // Clean the response
+      let cleanedText = generatedMessage
+        .replace(/^'|'$/g, "")
+        // eslint-disable-next-line no-useless-escape
+        .replace(/[\*\#]/g, "");
+      setAiValue(cleanedText);
+    } catch (error) {
       Swal.fire({
-        title: "You can only send one email every 10 minutes.",
-        text: "Please wait before trying again.",
-        icon: "warning",
-        timer: 4000,
+        title: "Error Generating Message",
+        text: error.message.includes("quota")
+          ? "Quota exceeded. Please try again later."
+          : "Failed to generate message.",
+        icon: "error",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleCopyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(aiValue);
+      Swal.fire({
+        title: "Copied to Clipboard!",
+        text: "The AI-generated message has been successfully copied.",
+        icon: "success",
+        timer: 2000,
         showConfirmButton: false,
       });
-      return; // Prevent submission if within 10 minutes
-    }
-
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
-    const personalizedMessage = defaultMessage.replace(
-      "{recipientName}",
-      formData.recipientName
-    );
-
-    const formPayload = new FormData();
-    formPayload.append("access_key", "d5e71c26-c571-44c9-a647-d1d7307f3567");
-    formPayload.append("email", formData.recipientEmail);
-    formPayload.append("subject", "Financial Aid Application Approved");
-    formPayload.append("message", personalizedMessage);
-
-    try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        body: formPayload,
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        Swal.fire({
-          title: "Email Sent!",
-          text: "The approval email has been sent successfully!",
-          icon: "success",
-          timer: 3000,
-          showConfirmButton: false,
-        });
-        setSuccess("Email sent successfully!");
-        setFormData({ recipientName: "", recipientEmail: "" });
-
-        // Lock form submission for 10 minutes
-        setCanSubmit(false);
-        setTimeout(() => {
-          setCanSubmit(true); // Allow resubmission after 10 minutes
-        }, 10 * 60 * 1000); // 10 minutes in milliseconds
-
-        // Clear success message after 5 seconds
-        setTimeout(() => setSuccess(""), 5000);
-      } else {
-        setError(data.message);
-      }
     } catch (err) {
-      setError("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
+      Swal.fire({
+        title: "Copy Failed",
+        text: "An error occurred while copying the text. Please try again.",
+        icon: "error",
+      });
     }
   };
 
@@ -102,15 +76,15 @@ Best regards,
       </div>
 
       <div className="flex justify-center items-center min-h-screen px-6 md:px-8">
-        <Card className="bg-opacity-80 backdrop-blur-md border border-gray-700 rounded-xl shadow-xl bg-transparent w-full max-w-lg">
+        <Card className="bg-opacity-80 backdrop-blur-md border border-gray-700 rounded-xl shadow-xl bg-transparent w-full max-w-3xl">
           <CardHeader>
             <CardTitle className="text-white text-center text-3xl font-extrabold tracking-wide">
-              Financial Aid Approval Email
+              AI-Powered Email Responder
             </CardTitle>
           </CardHeader>
           <Separator className="my-4 border-gray-500" />
           <CardContent>
-            <form onSubmit={onSubmit} className="space-y-6">
+            <form className="space-y-6">
               {/* Recipient Name Input */}
               <div>
                 <label
@@ -149,26 +123,33 @@ Best regards,
                 />
               </div>
 
-              {/* Success/Error Message */}
-              {success && (
-                <p className="text-green-500 text-center font-semibold">
-                  {success}
-                </p>
-              )}
-              {error && (
-                <p className="text-red-500 text-center font-semibold">
-                  {error}
-                </p>
+              {/* AI-Generated Message Preview */}
+              {aiValue && (
+                <div className="w-full h-96 max-h-96 rounded-md bg-white overflow-y-scroll p-3 relative mt-4 text-muted-foreground">
+                  {aiValue}
+                  <Button
+                    className="absolute top-3 right-3 z-10"
+                    variant={"outline"}
+                    size={"icon"}
+                    onClick={handleCopyToClipboard}
+                  >
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </div>
               )}
 
-              {/* Submit Button */}
+              {/* Generate Button */}
               <Button
-                type="submit"
-                disabled={loading || !canSubmit} // Disable button when loading or resubmission is locked
+                type="button"
+                onClick={handleGenerateDescription}
+                disabled={isGenerating}
                 className="w-full py-2 bg-transparent border border-white text-white rounded-md hover:bg-white hover:text-black transition-all duration-300 ease-in-out hover:scale-105"
               >
-                {loading ? "Sending..." : "Send Approval Email"}
+                {isGenerating ? "Generating..." : "Generate AI Message"}
               </Button>
+
+              {/* Rich Text Editor */}
+              <RichTextEditor input={input} setInput={setInput} />
             </form>
           </CardContent>
         </Card>

@@ -22,7 +22,7 @@ const Courses = () => {
       <div className="absolute inset-0 z-10 bg-transparent">
         {/* Content Area */}
         <div className="max-w-7xl mx-auto p-6">
-          <h2 className="font-bold text-4xl md:text-5xl text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-[#ff0000] to-[#95a300] animate__animated animate__fadeIn animate__delay-1s transform scale-105 animate__pulse">
+          <h2 className="font-bold text-4xl md:text-5xl text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-[#fbfbfb] to-[#1c1d13] animate__animated animate__fadeIn animate__delay-1s transform scale-105 animate__pulse">
             Our Courses
           </h2>
 

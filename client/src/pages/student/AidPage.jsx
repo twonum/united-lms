@@ -4,21 +4,68 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import StarryBackground from "@/components/StarryBackground";
+import RichTextEditor from "@/components/RichTextEditor";
 import Swal from "sweetalert2";
+import getGenerativeAIResponse from "../../../scripts/aistudio";
+import { Copy } from "lucide-react";
 
 const ApplyForAid = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    reason: "",
   });
+  const [aiValue, setAiValue] = useState("");
+  const [input, setInput] = useState({ content: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [canSubmit, setCanSubmit] = useState(true); // Controls whether form can be submitted
-  const [timeoutId, setTimeoutId] = useState(null); // To clear the timeout if needed
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [canSubmit, setCanSubmit] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleGenerateDescription = async () => {
+    try {
+      setIsGenerating(true);
+      const prompt = `Generate a compelling application for financial aid for an applicant named "${formData.name}".`;
+      const generatedMessage = await getGenerativeAIResponse(prompt);
+
+      let cleanedText = generatedMessage
+        .replace(/^'|'$/g, "")
+        // eslint-disable-next-line no-useless-escape
+        .replace(/[\*\#]/g, "");
+      setAiValue(cleanedText);
+    } catch (error) {
+      Swal.fire({
+        title: "Error Generating Message",
+        text: error.message.includes("quota")
+          ? "Quota exceeded. Please try again later."
+          : "Failed to generate message.",
+        icon: "error",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleCopyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(aiValue);
+      Swal.fire({
+        title: "Copied to Clipboard!",
+        text: "The AI-generated message has been successfully copied.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      Swal.fire({
+        title: "Copy Failed",
+        text: "An error occurred while copying the text. Please try again.",
+        icon: "error",
+      });
+    }
   };
 
   const onSubmit = async (event) => {
@@ -32,21 +79,18 @@ const ApplyForAid = () => {
         timer: 4000,
         showConfirmButton: false,
       });
-      return; // Prevent submission if it's within 10 minutes
+      return;
     }
 
-    setIsSubmitting(true); // Set submitting state to true
-    setCanSubmit(false); // Disable form submission temporarily
+    setIsSubmitting(true);
+    setCanSubmit(false);
 
     try {
       const formPayload = new FormData();
       formPayload.append("access_key", "d5e71c26-c571-44c9-a647-d1d7307f3567");
       formPayload.append("email", formData.email);
       formPayload.append("subject", "Financial Aid Application");
-      formPayload.append(
-        "message",
-        `Applicant Name: ${formData.name}\nReason: ${formData.reason}`
-      );
+      formPayload.append("message", input.content || aiValue);
 
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
@@ -56,24 +100,17 @@ const ApplyForAid = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Show success message
         Swal.fire({
           title: "Application Submitted",
           text: "Your financial aid application has been successfully submitted!",
           icon: "success",
-          timer: 3000, // 3 seconds for Swal to stay open
+          timer: 3000,
           showConfirmButton: false,
         });
-
-        // Clear form after submission
-        setFormData({ name: "", email: "", reason: "" });
-
-        // Lock form submission for 10 minutes
-        setTimeout(() => {
-          setCanSubmit(true); // Allow submission again after 10 minutes
-        }, 10 * 60 * 1000); // 10 minutes in milliseconds
+        setFormData({ name: "", email: "" });
+        setInput({ content: "" });
+        setTimeout(() => setCanSubmit(true), 10 * 60 * 1000);
       } else {
-        // Error message if the API returns an error
         Swal.fire({
           title: "Error",
           text: data.message || "Something went wrong. Please try again.",
@@ -83,7 +120,6 @@ const ApplyForAid = () => {
         });
       }
     } catch (error) {
-      // Catch any network or other errors
       Swal.fire({
         title: "Error",
         text: "An error occurred while submitting your application. Please try again.",
@@ -92,7 +128,7 @@ const ApplyForAid = () => {
         showConfirmButton: false,
       });
     } finally {
-      setIsSubmitting(false); // Reset submitting state
+      setIsSubmitting(false);
     }
   };
 
@@ -103,7 +139,7 @@ const ApplyForAid = () => {
       </div>
 
       <div className="flex justify-center items-center min-h-screen px-6 md:px-8">
-        <Card className="bg-opacity-80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg bg-transparent w-full max-w-lg">
+        <Card className="bg-opacity-80 backdrop-blur-md border border-gray-700 rounded-xl shadow-lg bg-transparent w-full max-w-3xl">
           <CardHeader>
             <CardTitle className="text-white text-center text-2xl font-bold">
               Apply for Financial Aid
@@ -148,27 +184,34 @@ const ApplyForAid = () => {
                 />
               </div>
 
-              <div>
-                <label
-                  htmlFor="reason"
-                  className="block text-sm font-medium text-gray-300"
-                >
-                  Why do you need financial aid?
-                </label>
-                <textarea
-                  id="reason"
-                  name="reason"
-                  value={formData.reason}
-                  onChange={handleChange}
-                  required
-                  rows="4"
-                  className="w-full px-4 py-2 mt-2 bg-transparent border border-gray-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-300 hover:border-white"
-                ></textarea>
-              </div>
+              {aiValue && (
+                <div className="w-full h-96 max-h-96 rounded-md bg-transparent overflow-y-scroll p-3 relative mt-4 text-muted-foreground">
+                  {aiValue}
+                  <Button
+                    className="absolute top-3 right-3 z-10"
+                    variant={"outline"}
+                    size={"icon"}
+                    onClick={handleCopyToClipboard}
+                  >
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+
+              <Button
+                type="button"
+                onClick={handleGenerateDescription}
+                disabled={isGenerating}
+                className="w-full py-2 bg-transparent border border-white text-white rounded-md hover:bg-white hover:text-black transition-all duration-300 ease-in-out hover:scale-105"
+              >
+                {isGenerating ? "Generating..." : "Generate AI Message"}
+              </Button>
+
+              <RichTextEditor input={input} setInput={setInput} />
 
               <Button
                 type="submit"
-                disabled={isSubmitting || !canSubmit} // Disable button while submitting or when resubmission is not allowed
+                disabled={isSubmitting || !canSubmit}
                 className="w-full py-2 bg-transparent border border-white text-white rounded-md hover:bg-white hover:text-black transition-all duration-300 ease-in-out hover:scale-105"
               >
                 {isSubmitting ? "Sending..." : "Submit Application"}

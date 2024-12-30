@@ -116,9 +116,11 @@ const LectureTab = () => {
   useEffect(() => {
     if (removeSuccess) {
       toast.success(removeData.message);
-    }
-  }, [removeSuccess]);
 
+      // Automatically navigate to the lecture page
+      navigate(`/admin/course/${courseId}/lecture`);
+    }
+  }, [removeSuccess, navigate]);
   return (
     <div className="bg-transparent p-6 mx-10 rounded-lg shadow-lg backdrop-blur-md">
       <Card className="bg-opacity-90 p-5 rounded-lg shadow-lg">

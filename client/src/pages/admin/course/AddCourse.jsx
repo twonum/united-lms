@@ -13,11 +13,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCreateCourseMutation } from "@/features/api/courseApi";
-import { Loader2 } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
+import { Loader2, Copy } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { categories } from "@/data/categories";
 
 const AddCourse = () => {
   const [courseTitle, setCourseTitle] = useState("");
@@ -36,6 +35,18 @@ const AddCourse = () => {
     await createCourse({ courseTitle, category });
   };
 
+  // Clipboard copy handler
+  const handleCopyToClipboard = () => {
+    navigator.clipboard
+      .writeText(courseTitle)
+      .then(() => {
+        toast.success("Title copied to clipboard!");
+      })
+      .catch(() => {
+        toast.error("Failed to copy title.");
+      });
+  };
+
   // Display toast on success
   useEffect(() => {
     if (isSuccess) {
@@ -43,17 +54,6 @@ const AddCourse = () => {
       navigate("/admin/course");
     }
   }, [isSuccess, error]);
-
-  // // Memoized category items to avoid re-renders
-  // const categoryItems = useMemo(
-  //   () =>
-  //     categories.map((category) => (
-  //       <SelectItem key={category} value={category}>
-  //         {category}
-  //       </SelectItem>
-  //     )),
-  //   []
-  // );
 
   return (
     <div className="flex flex-col items-center px-4 py-6 sm:px-6 lg:px-12 bg-transparent backdrop-blur-xl rounded-lg">
@@ -71,7 +71,7 @@ const AddCourse = () => {
         {/* Form */}
         <div className="space-y-6 p-6 bg-white bg-opacity-60 rounded-lg shadow-md backdrop-blur-xl">
           {/* Title */}
-          <div>
+          <div className="relative">
             <Label htmlFor="course-title" className="block text-gray-700">
               Title
             </Label>
@@ -81,8 +81,16 @@ const AddCourse = () => {
               value={courseTitle}
               onChange={(e) => setCourseTitle(e.target.value)}
               placeholder="Enter course name"
-              className="mt-2 w-full p-3 border border-gray-300 rounded-md text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-2 w-full p-3 pr-12 border border-gray-300 rounded-md text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
+            <Button
+              className="absolute top-2 right-2 z-10"
+              variant="outline"
+              size="icon"
+              onClick={handleCopyToClipboard}
+            >
+              <Copy className="w-4 h-4" />
+            </Button>
           </div>
 
           {/* Category */}

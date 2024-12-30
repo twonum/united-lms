@@ -20,25 +20,19 @@ export const courseApi = createApi({
     }),
     getSearchCourse: builder.query({
       query: ({ searchQuery, categories, sortByPrice }) => {
-        // Build qiery string
-        let queryString = `/search?query=${encodeURIComponent(searchQuery)}`
-
-        // append cateogry 
+        let queryString = `/search?query=${encodeURIComponent(searchQuery)}`;
         if (categories && categories.length > 0) {
           const categoriesString = categories.map(encodeURIComponent).join(",");
           queryString += `&categories=${categoriesString}`;
         }
-
-        // Append sortByPrice is available
         if (sortByPrice) {
           queryString += `&sortByPrice=${encodeURIComponent(sortByPrice)}`;
         }
-
         return {
           url: queryString,
           method: "GET",
-        }
-      }
+        };
+      },
     }),
     getPublishedCourse: builder.query({
       query: () => ({
@@ -58,6 +52,13 @@ export const courseApi = createApi({
         url: `/${courseId}`,
         method: "PUT",
         body: formData,
+      }),
+      invalidatesTags: ["Refetch_Creator_Course"],
+    }),
+    deleteCourse: builder.mutation({
+      query: (courseId) => ({
+        url: `/${courseId}`,
+        method: "DELETE",
       }),
       invalidatesTags: ["Refetch_Creator_Course"],
     }),
@@ -115,12 +116,14 @@ export const courseApi = createApi({
     }),
   }),
 });
+
 export const {
   useCreateCourseMutation,
   useGetSearchCourseQuery,
   useGetPublishedCourseQuery,
   useGetCreatorCourseQuery,
   useEditCourseMutation,
+  useDeleteCourseMutation, // Added export for the deleteCourse mutation
   useGetCourseByIdQuery,
   useCreateLectureMutation,
   useGetCourseLectureQuery,

@@ -58,16 +58,23 @@ const Navbar = () => {
               onOpenChange={setIsDropdownOpen}
             >
               <DropdownMenuTrigger asChild>
-                <Avatar className="cursor-pointer relative overflow-hidden rounded-full w-12 h-12 hover:scale-110 transition-transform duration-500 ease-in-out transform-gpu hover:rotate-[15deg] hover:shadow-xl hover:drop-shadow-[0_0_80px rgba(255,182,193,1)] hover:ring-4 hover:ring-teal-500">
-                  <div className="absolute inset-0 bg-gradient-to-t from-pink-500 via-teal-500 to-transparent opacity-0 hover:opacity-40 transition-all duration-500 ease-in-out"></div>
+                <Avatar className="relative cursor-pointer overflow-hidden rounded-full w-10 h-10 md:w-11 md:h-11 hover:scale-110 transition-transform duration-500 ease-in-out transform-gpu hover:rotate-6 hover:shadow-xl hover:drop-shadow-[0_0_20px rgba(255,182,193,1)] hover:ring-4 hover:ring-teal-500">
+                  {/* No gradient background effect, keeping the image colors intact */}
+
+                  {/* Avatar Image */}
                   <AvatarImage
                     src={user?.photoUrl || "https://github.com/shadcn.png"}
                     alt="User Avatar"
-                    className="rounded-full border-4 border-lime-600 shadow-inner hover:border-lime-400 transition-all duration-500 transform-gpu"
+                    className="object-cover rounded-full border-4 border-lime-600 shadow-inner hover:border-lime-400 transition-all duration-500 transform-gpu"
                   />
-                  <AvatarFallback className="bg-gradient-to-r from-pink-500 to-teal-500 text-white font-extrabold text-2xl shadow-[0_0_15px rgba(255,105,180,1)] hover:text-teal-300 transition-all duration-500 ease-in-out">
+
+                  {/* Fallback text if image not available */}
+                  <AvatarFallback className="bg-gradient-to-r from-pink-500 to-teal-500 text-white font-extrabold text-xl shadow-xl hover:text-teal-300 transition-all duration-500 ease-in-out">
                     CN
                   </AvatarFallback>
+
+                  {/* Hover Ring Animation */}
+                  <div className="absolute inset-0 rounded-full border-2 border-teal-500 opacity-0 hover:opacity-100 transition-opacity duration-500 ease-in-out"></div>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[400px] h-[600px] bg-transparent border border-lime-500 shadow-[0_30px_150px_rgba(0,0,0,0.9)] rounded-[50px] transform scale-90 origin-top hover:scale-100 transition-transform duration-1200 ease-out overflow-y-auto">

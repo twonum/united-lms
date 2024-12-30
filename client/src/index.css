@@ -4,69 +4,47 @@
 
 @layer base {
   :root {
-    --background: 0 0% 0%;
-    /* Black background for light theme */
-    --foreground: 0 0% 100%;
-    /* White text for contrast */
-    --card: 0 0% 15%;
-    /* Slightly lighter black for cards */
-    --card-foreground: 0 0% 100%;
-    /* White text for cards */
-    --popover: 0 0% 15%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 0%;
-    /* Primary is black */
-    --primary-foreground: 0 0% 100%;
-    /* White text for primary elements */
-    --secondary: 0 0% 20%;
-    /* Dark gray for secondary elements */
-    --secondary-foreground: 0 0% 100%;
-    /* White text for secondary elements */
-    --muted: 0 0% 10%;
-    /* Very dark muted background */
+    --background: 170 20% 10%; /* Dark teal background */
+    --foreground: 0 0% 95%;
+    --card: 170 25% 15%; /* Muted greenish teal */
+    --card-foreground: 0 0% 85%;
+    --popover: 170 25% 15%;
+    --popover-foreground: 0 0% 90%;
+    --primary: 0 0% 95%;
+    --primary-foreground: 0 0% 10%;
+    --secondary: 170 25% 20%; /* Soft teal-gray */
+    --secondary-foreground: 0 0% 85%;
+    --muted: 170 20% 10%;
     --muted-foreground: 0 0% 60%;
-    /* Light gray for muted text */
-    --accent: 0 0% 20%;
-    /* Accent elements */
+    --accent: 170 60% 50%; /* Bright green-teal accents */
     --accent-foreground: 0 0% 100%;
-    /* White for accent text */
     --destructive: 0 62.8% 30.6%;
-    /* Red for destructive actions */
     --destructive-foreground: 0 0% 100%;
-    /* White text for destructive elements */
-    --border: 0 0% 20%;
-    /* Dark gray borders */
-    --input: 0 0% 10%;
-    /* Input background */
-    --ring: 0 0% 100%;
-    /* Bright white ring */
-    --radius: 0.5rem;
-    /* Border radius */
+    --border: 170 20% 30%;
+    --input: 170 15% 15%;
+    --ring: 170 60% 60%;
   }
 
   .dark {
-    --background: 0 0% 0%;
-    /* Black background for dark theme */
-    --foreground: 0 0% 100%;
-    /* White text for contrast */
-    --card: 0 0% 15%;
-    /* Slightly lighter black for cards */
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 15%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 0%;
-    /* Primary is black */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 0 0% 20%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 10%;
+    /* Dark theme adjustments */
+    --background: 0 0% 0%; /* Black background for dark theme */
+    --foreground: 0 0% 100%; /* White text for contrast */
+    --card: 0 0% 15%; /* Slightly darker cards */
+    --card-foreground: 0 0% 100%; /* White text for dark mode cards */
+    --popover: 0 0% 15%; /* Darker popover background */
+    --popover-foreground: 0 0% 100%; /* White popover text */
+    --primary: 0 0% 100%; /* White primary text in dark mode */
+    --primary-foreground: 0 0% 0%; /* Black primary text in dark mode */
+    --secondary: 0 0% 20%; /* Dark gray for secondary elements */
+    --secondary-foreground: 0 0% 100%; /* White secondary text in dark mode */
+    --muted: 0 0% 10%; /* Dark muted background */
+    --muted-foreground: 0 0% 60%; /* Light gray for muted text */
+    --accent: 200 100% 60%; /* Soft blue accent color */
+    --accent-foreground: 0 0% 100%; /* White accent text */
+    --destructive: 0 62.8% 30.6%; /* Red for destructive actions */
+    --destructive-foreground: 0 0% 100%; /* White text for destructive elements */
+    --border: 0 0% 20%; /* Dark gray borders for dark mode */
+    --input: 0 0% 10%; /* Dark background for inputs */
     --ring: 0 0% 100%;
   }
 }
@@ -79,6 +57,20 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .card {
+    @apply bg-card text-card-foreground border border-border rounded-lg shadow-lg;
+  }
+
+  .input,
+  .button {
+    @apply bg-input text-foreground border border-border rounded-lg focus:ring-4 focus:ring-ring transition-all duration-300 ease-in-out;
+  }
+
+  .input:hover,
+  .button:hover {
+    @apply border-accent text-accent-foreground bg-transparent hover:ring-accent;
+  }
 }
 
 @keyframes fadeInDown {
@@ -86,7 +78,6 @@
     opacity: 0;
     transform: translateY(-80px) scale(0.8);
   }
-
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -98,7 +89,6 @@
     opacity: 0;
     transform: translateY(100px) scale(0.8);
   }
-
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);

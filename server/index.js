@@ -9,15 +9,15 @@ import mediaRoute from "./routes/media.route.js";
 import purchaseRoute from "./routes/purchaseCourse.route.js";
 import courseProgressRoute from "./routes/courseProgress.route.js";
 
-dotenv.config({});
+dotenv.config();
 
-// call database connection here
+// Call database connection here
 connectDB();
 const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// default middleware
+// Default middleware
 app.use(express.json());
 app.use(cookieParser());
 
@@ -26,16 +26,25 @@ app.use(cors({
     credentials: true
 }));
 
-// apis
+// APIs
 app.use("/api/v1/media", mediaRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/course", courseRoute);
 app.use("/api/v1/purchase", purchaseRoute);
 app.use("/api/v1/progress", courseProgressRoute);
 
+// 404 handler for undefined routes
+app.use((req, res) => {
+    res.status(404).json({ message: "Route not found" });
+});
 
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error("Server Error:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+});
+
+// Start server
 app.listen(PORT, () => {
-    console.log(`Server listen at port ${PORT}`);
-})
-
-
+    console.log(`Server listening on port ${PORT}`);
+});
