@@ -22,7 +22,8 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-const MEDIA_API = "http://localhost:8080/api/v1/media";
+//const MEDIA_API = "http://localhost:8080/api/v1/media";
+const MEDIA_API = "https://united-lms.onrender.com/api/v1/media";
 
 const LectureTab = () => {
   const [lectureTitle, setLectureTitle] = useState("");
