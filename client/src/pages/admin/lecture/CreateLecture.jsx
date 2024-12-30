@@ -68,11 +68,15 @@ const CreateLecture = () => {
         <div className="flex items-center gap-4 justify-between">
           <Button
             variant="outline"
-            onClick={() => navigate(`/admin/course/${courseId}`)}
+            onClick={() => {
+              navigate(`/admin/course/${courseId}`);
+              window.location.reload(); // Reloads the page after navigation
+            }}
             className="text-white border-white/30 hover:border-white/50 transition-all rounded-lg"
           >
             Back to Course
           </Button>
+
           <Button
             disabled={isLoading}
             onClick={createLectureHandler}

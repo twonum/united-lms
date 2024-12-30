@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { categories } from "@/data/categories";
 import {
   useEditCourseMutation,
   useGetCourseByIdQuery,
@@ -391,26 +392,16 @@ const CourseTab = () => {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Category</SelectLabel>
-                  <SelectItem value="Next JS">Next JS</SelectItem>
-                  <SelectItem value="Data Science">Data Science</SelectItem>
-                  <SelectItem value="Frontend Development">
-                    Frontend Development
-                  </SelectItem>
-                  <SelectItem value="Fullstack Development">
-                    Fullstack Development
-                  </SelectItem>
-                  <SelectItem value="MERN Stack Development">
-                    MERN Stack Development
-                  </SelectItem>
-                  <SelectItem value="Javascript">Javascript</SelectItem>
-                  <SelectItem value="Python">Python</SelectItem>
-                  <SelectItem value="Docker">Docker</SelectItem>
-                  <SelectItem value="MongoDB">MongoDB</SelectItem>
-                  <SelectItem value="HTML">HTML</SelectItem>
+                  {categories.map((cat, index) => (
+                    <SelectItem key={index} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
+
           <div>
             <Label className="text-white">Course Level</Label>
             <Select
