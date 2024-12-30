@@ -29,6 +29,7 @@ import ApplyForAid from "./pages/student/AidPage";
 import EmailResponder from "./pages/admin/EmailResponder";
 import GetCertificate from "./pages/student/GetCertificate";
 import NotFound from "./pages/NotFound"; // Import NotFound component
+import Footer from "./components/Footer";
 
 const appRouter = createBrowserRouter([
   {
@@ -41,6 +42,7 @@ const appRouter = createBrowserRouter([
           <>
             <HeroSection />
             <Courses />
+            <Footer />
             {/* <Dynamic3DHeading /> */}
           </>
         ),
