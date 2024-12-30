@@ -82,47 +82,52 @@ const Navbar = () => {
                   My Account
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="border-lime-500 my-6" />
-                <DropdownMenuGroup className="flex flex-col items-center gap-10">
+                <DropdownMenuGroup className="flex flex-col items-center gap-6">
+                  {" "}
+                  {/* Compact gap */}
                   <DropdownMenuItem
                     className="w-full animate-slideInUp"
                     onClick={handleDropdownClose}
                   >
                     <Link
                       to="/"
-                      className="text-white w-full text-center justify-center items-center hover:text-lime-300 py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-r from-gray-900 via-pink-800 to-gray-900 hover:bg-gradient-to-r hover:from-pink-700 hover:to-teal-600 shadow-lg "
+                      className="text-white w-full text-center justify-center items-center py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-br from-blue-600 via-purple-500 to-pink-400 hover:bg-gradient-to-bl hover:from-pink-500 hover:via-yellow-500 hover:to-orange-400 hover:scale-105 shadow-lg shadow-purple-500/40 hover:shadow-pink-500/50"
                     >
                       Home
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="w-full animate-slideInUp"
-                    onClick={handleDropdownClose}
-                  >
-                    <Link
-                      to="/my-learning"
-                      className="text-white w-full text-center justify-center items-center hover:text-teal-300 py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-r from-gray-900 via-teal-800 to-gray-900 hover:bg-gradient-to-r hover:from-teal-700 hover:to-emerald-600 shadow-lg"
+                  {user?.role === "student" && (
+                    <DropdownMenuItem
+                      className="w-full animate-slideInUp"
+                      onClick={handleDropdownClose}
                     >
-                      My Learning
-                    </Link>
-                  </DropdownMenuItem>
+                      <Link
+                        to="/my-learning"
+                        className="text-white w-full text-center justify-center items-center py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-br from-teal-500 via-green-400 to-emerald-600 hover:bg-gradient-to-bl hover:from-emerald-500 hover:via-blue-400 hover:to-cyan-500 hover:scale-105 shadow-lg shadow-green-400/40 hover:shadow-cyan-500/50"
+                      >
+                        My Learning
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem
                     className="w-full animate-slideInUp"
                     onClick={handleDropdownClose}
                   >
                     <Link
                       to="/profile"
-                      className="text-white w-full text-center justify-center items-center hover:text-pink-300 py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-r from-gray-900 via-pink-800 to-gray-900 hover:bg-gradient-to-r hover:from-pink-700 hover:to-teal-600 shadow-lg "
+                      className="text-white w-full text-center justify-center items-center py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-br from-pink-500 via-rose-400 to-red-500 hover:bg-gradient-to-bl hover:from-red-500 hover:via-orange-400 hover:to-yellow-500 hover:scale-105 shadow-lg shadow-rose-400/40 hover:shadow-yellow-500/50"
                     >
                       Edit Profile
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={logoutHandler}
-                    className="w-full text-center justify-center items-center text-sky-50 hover:text-red-400 py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-r from-gray-900 via-red-800 to-gray-900 hover:bg-gradient-to-r hover:from-red-700 hover:to-pink-600 shadow-lg animate-slideInUp"
+                    className="w-full text-center justify-center items-center text-sky-50 py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-br from-red-600 via-rose-500 to-pink-400 hover:bg-gradient-to-bl hover:from-pink-500 hover:via-purple-500 hover:to-blue-500 hover:scale-105 shadow-lg shadow-red-400/40 hover:shadow-blue-500/50 animate-slideInUp"
                   >
                     Log out
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
+
                 {user?.role === "instructor" && (
                   <>
                     <DropdownMenuSeparator className="border-lime-500 my-6" />
