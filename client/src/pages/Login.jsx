@@ -222,14 +222,14 @@ const Login = () => {
                       "Signup"
                     )}
                   </Button>
-                  <Button className="w-full bg-transparent text-white border-2 border-white hover:bg-gray-200 hover:text-black hover:shadow-lg flex items-center justify-center space-x-2 transition-all duration-300">
+                  {/* <Button className="w-full bg-transparent text-white border-2 border-white hover:bg-gray-200 hover:text-black hover:shadow-lg flex items-center justify-center space-x-2 transition-all duration-300">
                     <img
                       src="/google.svg"
                       alt="Google Logo"
                       className="h-5 w-5"
                     />
                     <span>Continue with Google</span>
-                  </Button>
+                  </Button> */}
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -292,14 +292,14 @@ const Login = () => {
                       "Login"
                     )}
                   </Button>
-                  <Button className="w-full bg-transparent text-white border-2 border-white hover:bg-gray-200 hover:text-black hover:shadow-lg flex items-center justify-center space-x-2 transition-all duration-300">
+                  {/* <Button className="w-full bg-transparent text-white border-2 border-white hover:bg-gray-200 hover:text-black hover:shadow-lg flex items-center justify-center space-x-2 transition-all duration-300">
                     <img
                       src="/google.svg"
                       alt="Google Logo"
                       className="h-5 w-5"
                     />
                     <span>Continue with Google</span>
-                  </Button>
+                  </Button> */}
                 </CardFooter>
               </Card>
             </TabsContent>
