@@ -1,24 +1,10 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import { Menu, School } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useEffect } from "react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Button } from "./ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import DarkMode from "@/DarkMode";
-import {
   Sheet,
-  SheetClose,
   SheetContent,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -26,6 +12,8 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useLogoutUserMutation } from "@/features/api/authApi";
 import { toast } from "sonner";
+import DarkMode from "@/DarkMode";
+import { Button } from "./ui/button";
 
 const MobileNavbar = ({ user }) => {
   const navigate = useNavigate();
@@ -44,43 +32,69 @@ const MobileNavbar = ({ user }) => {
 
   return (
     <Sheet>
+      {/* Menu Button */}
       <SheetTrigger asChild>
         <Button
           size="icon"
-          className="rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors duration-300 ease-in-out"
+          className="rounded-full bg-black text-white border-2 border-black hover:bg-white hover:text-black hover:shadow-lg hover:shadow-black/50 transition-all duration-300 ease-in-out"
           variant="outline"
         >
-          <Menu size={28} color="white" />
+          <Menu size={28} />
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col dark:bg-[#1C1C20] bg-white">
-        <SheetHeader className="flex items-center justify-between mt-2 px-6">
-          <SheetTitle className="font-bold text-xl text-white">
-            <Link
-              to="/"
-              className="text-white dark:text-gray-200 hover:text-gray-300 transition-colors duration-300 ease-in-out"
-            >
+
+      {/* Sidebar Content */}
+      <SheetContent className="flex flex-col dark:bg-gray-900 bg-gray-100 border-2 border-gray-300 shadow-lg shadow-gray-300/50 backdrop-blur-md animate-slideInLeft">
+        {/* Header */}
+        <SheetHeader className="flex items-center justify-between mt-4 px-6">
+          <SheetTitle className="font-extrabold text-3xl text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500 hover:from-pink-500 hover:to-yellow-500 transition-all duration-500 ease-in-out">
+            <Link to="/" className="hover:scale-105">
               United LMS
             </Link>
           </SheetTitle>
           <DarkMode />
         </SheetHeader>
-        <nav className="flex flex-col px-6 space-y-4 mt-4">
+
+        {/* Navigation Links */}
+        <nav className="flex flex-col px-6 space-y-6 mt-8">
+          <Link
+            to="/"
+            className="text-black dark:text-white border-2 border-black bg-black hover:bg-white hover:text-black transition-all duration-300 ease-in-out py-3 px-6 rounded-md shadow-md hover:shadow-lg hover:scale-105"
+          >
+            Home
+          </Link>
           <Link
             to="/my-learning"
-            className="text-white dark:text-gray-300 hover:text-gray-300 py-2 px-4 rounded-md transition-all duration-300"
+            className="text-black dark:text-white border-2 border-black bg-black hover:bg-white hover:text-black transition-all duration-300 ease-in-out py-3 px-6 rounded-md shadow-md hover:shadow-lg hover:scale-105"
           >
             My Learning
           </Link>
           <Link
             to="/profile"
-            className="text-white dark:text-gray-300 hover:text-gray-300 py-2 px-4 rounded-md transition-all duration-300"
+            className="text-black dark:text-white border-2 border-black bg-black hover:bg-white hover:text-black transition-all duration-300 ease-in-out py-3 px-6 rounded-md shadow-md hover:shadow-lg hover:scale-105"
           >
             Edit Profile
           </Link>
+
+          {/* Dashboard Button for Instructors */}
+          {user?.role === "instructor" && (
+            <>
+              <div className="border-t border-lime-500 my-6"></div>
+              <div className="w-full">
+                <Link
+                  to="/admin/dashboard"
+                  className="text-teal-200 w-full text-center flex justify-center items-center py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-r from-gray-900 via-emerald-800 to-gray-900 hover:bg-gradient-to-r hover:from-emerald-700 hover:to-lime-600 shadow-lg hover:scale-110"
+                >
+                  Dashboard
+                </Link>
+              </div>
+            </>
+          )}
+
+          {/* Logout/Login Button */}
           {user ? (
             <button
-              className="text-red-500 dark:text-red-400 hover:text-red-400 py-2 px-4 rounded-md transition-all duration-300"
+              className="text-red-500 border-2 border-black bg-black hover:bg-white hover:text-red-500 transition-all duration-300 ease-in-out py-3 px-6 rounded-md shadow-md hover:shadow-lg hover:scale-105"
               onClick={logoutHandler}
             >
               Log out
@@ -88,7 +102,7 @@ const MobileNavbar = ({ user }) => {
           ) : (
             <Link
               to="/login"
-              className="text-white border-2 border-white bg-transparent hover:bg-black hover:text-white hover:ring-4 hover:ring-white hover:ring-opacity-50 py-2 px-4 rounded-md transition-all duration-300 transform hover:scale-105"
+              className="text-black border-2 border-black bg-black hover:bg-white hover:text-black transition-all duration-300 ease-in-out py-3 px-6 rounded-md shadow-md hover:shadow-lg hover:scale-105"
             >
               Login
             </Link>

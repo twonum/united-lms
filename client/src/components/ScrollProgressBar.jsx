@@ -2,14 +2,13 @@
 import React, { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 
-// Keyframes for 3D floating effect
+// Keyframes for animations
 const float = keyframes`
   0% { transform: translateY(0); }
   50% { transform: translateY(-20px); }
   100% { transform: translateY(0); }
 `;
 
-// Keyframes for glitch effect
 const glitch = keyframes`
   0% { transform: translateX(0); }
   25% { transform: translateX(5px); }
@@ -18,7 +17,6 @@ const glitch = keyframes`
   100% { transform: translateX(0); }
 `;
 
-// Keyframes for neon glow effect with color shift
 const glow = keyframes`
   0% { box-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.7); }
   25% { box-shadow: 0 0 30px rgba(255, 0, 255, 1), 0 0 60px rgba(255, 0, 255, 0.7); }
@@ -27,24 +25,33 @@ const glow = keyframes`
   100% { box-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.7); }
 `;
 
-// Keyframes for reflective surface
+const pulse = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+`;
+
+const shine = keyframes`
+  0% { background-position: -200%; }
+  100% { background-position: 200%; }
+`;
+
 const reflect = keyframes`
   0% { opacity: 0.3; }
   50% { opacity: 0.5; }
   100% { opacity: 0.3; }
 `;
 
-// Keyframes for shadow animation
 const shadowPulse = keyframes`
   0% { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); }
   50% { box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7); }
   100% { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); }
 `;
 
-// Styled component for the progress bar container
+// Styled components
 const ProgressBarContainer = styled.div`
   position: fixed;
-  top: 3px; /* Adjusted to move the progress bar higher */
+  top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
@@ -52,25 +59,33 @@ const ProgressBarContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 20px;
+  height: 25px;
   width: 100%;
-  perspective: 1500px; /* Adds depth for 3D effect */
+  perspective: 1500px;
+
+  @media (max-width: 768px) {
+    height: 20px;
+  }
+
+  @media (max-width: 480px) {
+    height: 15px;
+  }
 `;
 
-// Styled component for the actual progress bar
 const ProgressBar = styled.div`
   position: relative;
   width: ${({ scrollWidth }) => `${scrollWidth}%`};
-  height: 15px; /* Increased height for more impact */
-  background: linear-gradient(45deg, #ff0066, #00ff66, #ffcc00);
-  border-radius: 5px;
+  height: 20px;
+  background: linear-gradient(120deg, #ff0066, #00ff66, #ffcc00, #0066ff);
+  background-size: 300% 300%;
+  border-radius: 8px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
   transform: rotateX(10deg) translateZ(10px);
   animation: ${float} 1.5s infinite ease-in-out, ${glitch} 0.5s infinite,
-    ${glow} 3s infinite alternate, ${shadowPulse} 2s infinite alternate;
+    ${glow} 3s infinite alternate, ${shadowPulse} 2s infinite alternate,
+    ${shine} 5s linear infinite;
   filter: blur(0.5px);
   transition: width 0.25s ease-out;
-  z-index: 2;
 
   &:hover {
     animation: none;
@@ -85,26 +100,53 @@ const ProgressBar = styled.div`
     left: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
-    z-index: 3;
-    opacity: 0.7;
-    animation: ${glitch} 1s infinite linear;
+    opacity: 0.8;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    animation: ${glitch} 1s infinite linear, ${pulse} 1.5s infinite ease-in-out;
+
+    @media (max-width: 768px) {
+      font-size: 12px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 10px;
+    }
   }
 `;
 
-// Styled component for the reflective surface below the bar
 const Reflection = styled.div`
   position: absolute;
   top: 100%;
   left: 0;
   width: 100%;
-  height: 5px;
+  height: 8px;
   background: rgba(0, 255, 255, 0.2);
   transform: scaleY(-1);
   animation: ${reflect} 2s infinite alternate;
+
+  @media (max-width: 768px) {
+    height: 6px;
+  }
+
+  @media (max-width: 480px) {
+    height: 4px;
+  }
 `;
 
+const GlowEffect = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0.2);
+  mix-blend-mode: overlay;
+`;
+
+// Component
 const ScrollProgressBar = () => {
   const [scrollWidth, setScrollWidth] = useState(0);
 
@@ -126,7 +168,9 @@ const ScrollProgressBar = () => {
 
   return (
     <ProgressBarContainer>
-      <ProgressBar scrollWidth={scrollWidth} />
+      <ProgressBar scrollWidth={scrollWidth}>
+        <GlowEffect />
+      </ProgressBar>
       <Reflection />
     </ProgressBarContainer>
   );
