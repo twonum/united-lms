@@ -169,9 +169,11 @@ const Navbar = () => {
 
       {/* Mobile Navbar */}
       <div className="flex md:hidden items-center justify-between px-6 h-full">
-        <h1 className="font-extrabold text-2xl text-white hover:text-gray-400 transition-colors duration-300 ease-in-out">
-          United LMS
-        </h1>
+        <Link to="/" className="hover:scale-105">
+          <h1 className="font-extrabold text-2xl text-white hover:text-gray-400 transition-colors duration-300 ease-in-out">
+            United LMS
+          </h1>
+        </Link>
         <MobileNavbar user={user} />
       </div>
     </div>
