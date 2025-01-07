@@ -7,26 +7,55 @@ import StarryBackground from "@/components/StarryBackground"; // Optional dynami
 
 const Sidebar = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   // Toggle the sidebar open/close state
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+
+  // Toggle the dropdown menu
+  const toggleDropdown = () => setDropdownOpen(!isDropdownOpen);
 
   return (
     <div className="relative min-h-screen">
       {/* Starry Background */}
       <StarryBackground />
 
-      {/* Toggle Button */}
-      <button
-        className={`lg:hidden fixed top-4 left-4 z-30 
-          bg-black text-white px-5 py-2 rounded-md shadow-md 
-          hover:bg-white hover:text-black hover:shadow-lg 
-          focus:outline-none focus:ring focus:ring-gray-400 
-          transition-all duration-300`}
-        onClick={toggleSidebar}
-      >
-        {isSidebarOpen ? "Close Menu" : "Open Menu"}
-      </button>
+      {/* Floating Dropdown Button */}
+      {!isSidebarOpen && (
+        <div className="fixed top-1/2 left-4 transform -translate-y-1/2 z-40">
+          <button
+            className={`w-full py-2 px-4 bg-transparent border border-white text-white rounded-md 
+              hover:bg-white hover:text-black transition-all duration-300 ease-in-out hover:scale-105`}
+            onClick={toggleDropdown}
+          >
+            Menu
+          </button>
+
+          {/* Dropdown Menu */}
+          {isDropdownOpen && (
+            <div
+              className="mt-2 bg-black bg-opacity-90 text-white shadow-lg rounded-md 
+              backdrop-blur-lg p-4 space-y-4 border border-gray-700"
+            >
+              <DropdownLink
+                to="dashboard"
+                label="Dashboard"
+                closeMenu={toggleDropdown}
+              />
+              <DropdownLink
+                to="course"
+                label="Courses"
+                closeMenu={toggleDropdown}
+              />
+              <DropdownLink
+                to="email-responder"
+                label="Emails"
+                closeMenu={toggleDropdown}
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Sidebar and Overlay */}
       <div className="flex min-h-screen">
@@ -66,7 +95,10 @@ const Sidebar = () => {
         {/* Main Content */}
         <div
           className="flex-1 p-5 sm:p-10 bg-transparent dark:bg-gray-800"
-          onClick={() => isSidebarOpen && setSidebarOpen(false)} // Auto-close sidebar on content click
+          onClick={() => {
+            if (isSidebarOpen) setSidebarOpen(false);
+            if (isDropdownOpen) setDropdownOpen(false);
+          }}
         >
           <Outlet />
         </div>
@@ -85,6 +117,18 @@ const SidebarLink = ({ to, icon: Icon, label }) => (
   >
     <Icon size={22} className="text-[#ecf0f1]" />
     <span className="text-lg font-medium">{label}</span>
+  </Link>
+);
+
+// Reusable Dropdown Link Component
+const DropdownLink = ({ to, label, closeMenu }) => (
+  <Link
+    to={to}
+    onClick={closeMenu}
+    className={`block px-4 py-2 text-white hover:bg-[#1abc9c] hover:text-black 
+      rounded-md transition-all duration-300`}
+  >
+    {label}
   </Link>
 );
 

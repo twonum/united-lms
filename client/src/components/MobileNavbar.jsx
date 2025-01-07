@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { Menu } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -9,7 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useLogoutUserMutation } from "@/features/api/authApi";
 import { toast } from "sonner";
 import DarkMode from "@/DarkMode";
@@ -17,7 +17,9 @@ import { Button } from "./ui/button";
 
 const MobileNavbar = ({ user }) => {
   const navigate = useNavigate();
+  const location = useLocation(); // Get current route
   const [logoutUser, { data, isSuccess }] = useLogoutUserMutation();
+  const [isOpen, setIsOpen] = useState(false); // Sidebar visibility state
 
   const logoutHandler = async () => {
     await logoutUser();
@@ -30,8 +32,19 @@ const MobileNavbar = ({ user }) => {
     }
   }, [isSuccess, data, navigate]);
 
+  const handleCloseSidebar = () => {
+    setIsOpen(false); // Close the sidebar
+  };
+
+  const navLinkClass = (path) =>
+    `border-2 py-3 px-6 rounded-md shadow-md transition-all duration-300 ease-in-out ${
+      location.pathname === path
+        ? "bg-white text-black" // Highlight selected
+        : "bg-black text-white dark:text-white hover:bg-white hover:text-black"
+    }`;
+
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       {/* Menu Button */}
       <SheetTrigger asChild>
         <Button
@@ -59,19 +72,22 @@ const MobileNavbar = ({ user }) => {
         <nav className="flex flex-col px-6 space-y-6 mt-8">
           <Link
             to="/"
-            className="text-black dark:text-white border-2 border-black bg-black hover:bg-white hover:text-black transition-all duration-300 ease-in-out py-3 px-6 rounded-md shadow-md hover:shadow-lg hover:scale-105"
+            onClick={handleCloseSidebar}
+            className={navLinkClass("/")}
           >
             Home
           </Link>
           <Link
             to="/my-learning"
-            className="text-black dark:text-white border-2 border-black bg-black hover:bg-white hover:text-black transition-all duration-300 ease-in-out py-3 px-6 rounded-md shadow-md hover:shadow-lg hover:scale-105"
+            onClick={handleCloseSidebar}
+            className={navLinkClass("/my-learning")}
           >
             My Learning
           </Link>
           <Link
             to="/profile"
-            className="text-black dark:text-white border-2 border-black bg-black hover:bg-white hover:text-black transition-all duration-300 ease-in-out py-3 px-6 rounded-md shadow-md hover:shadow-lg hover:scale-105"
+            onClick={handleCloseSidebar}
+            className={navLinkClass("/profile")}
           >
             Edit Profile
           </Link>
@@ -83,7 +99,8 @@ const MobileNavbar = ({ user }) => {
               <div className="w-full">
                 <Link
                   to="/admin/dashboard"
-                  className="text-teal-200 w-full text-center flex justify-center items-center py-6 px-10 rounded-2xl transition-all duration-700 bg-gradient-to-r from-gray-900 via-emerald-800 to-gray-900 hover:bg-gradient-to-r hover:from-emerald-700 hover:to-lime-600 shadow-lg hover:scale-110"
+                  onClick={handleCloseSidebar}
+                  className={navLinkClass("/admin/dashboard")}
                 >
                   Dashboard
                 </Link>
@@ -95,14 +112,18 @@ const MobileNavbar = ({ user }) => {
           {user ? (
             <button
               className="text-red-500 border-2 border-black bg-black hover:bg-white hover:text-red-500 transition-all duration-300 ease-in-out py-3 px-6 rounded-md shadow-md hover:shadow-lg hover:scale-105"
-              onClick={logoutHandler}
+              onClick={() => {
+                logoutHandler();
+                handleCloseSidebar();
+              }}
             >
               Log out
             </button>
           ) : (
             <Link
               to="/login"
-              className="text-black border-2 border-black bg-black hover:bg-white hover:text-black transition-all duration-300 ease-in-out py-3 px-6 rounded-md shadow-md hover:shadow-lg hover:scale-105"
+              onClick={handleCloseSidebar}
+              className={navLinkClass("/login")}
             >
               Login
             </Link>
